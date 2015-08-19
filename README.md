@@ -12,20 +12,23 @@ This dictionary learning variant is tailored for dealing with
 multivariate datasets and especially timeseries, where samples are
 matrices and the dataset is seen as a tensor.
 Dictionary Learning Algorithm (DLA) decompose input vector on
-a dictionary matrix with a sparse coefficient vector. To handle
-multivariate data, a first approach called **multichannel DLA** is to
+a dictionary matrix with a sparse coefficient vector, see (a) on
+figure below. To handle
+multivariate data, a first approach called **multichannel DLA**, see (b) on figure below, is to
 decompose the matrix vector on a dictionary matrix but with sparse
 coefficient matrices, assuming that a multivariate sample could be
 seen as a collection of channels explained by the same dictionary.
 Nonetheless, multichannel DLA breaks the "spatial" coherence of
 multivariate samples, discarding the column-wise relationship
-existing in the samples. **Multivariate DLA** decompose the matrix
+existing in the samples. **Multivariate DLA**, (c), on figure below, decompose the matrix
 input on a tensor dictionary, where each atom is a matrix, with sparse
 coefficient vectors. In this case, the spatial relationship are
 directly encoded in the dictionary, as each atoms has the same
 dimension than an input samples.
 
-figure DLA vs multi-channel vs mutivariate
+![dictionaries](https://github.com/sylvchev/mdla/raw/master/img/multidico.png)
+
+(figure from [Chevallier et al., 2014][CHE14] )
 
 To handle timeseries, two major modifications are brought to DLA:
 1. extension to **multivariate** samples
@@ -37,7 +40,9 @@ leading to a decomposition with sparse coefficients and offsets. In
 the latter case, the decomposition could be seen as sequence of
 kernels occuring at different time steps.
 
-figure Lewicki
+![shift invariance](https://github.com/sylvchev/mdla/raw/master/img/audio4spikegram.png)
+
+(figure from [Smith & Lewicki, 2005][LEW05])
 
 The proposed implementation is an adaptation of the work of the
 following authors:
@@ -77,3 +82,9 @@ print ('Objective error for each samples is:')
 for i in range(len(r)):
     print ('Sample', i, ':', norm(r[i], 'fro') + len(code[i]))
 ```
+
+## Bibliography
+
+[CHE14]: http://dx.doi.org/10.1109/ICASSP.2014.6854993 "Chevallier, S., Barthelemy, Q., & Atif, J. (2014, May). *Subspace metrics for multivariate dictionaries and application to EEG*. In Acoustics, Speech and Signal Processing (ICASSP), 2014 IEEE International Conference on (pp. 7178-7182). IEEE."
+
+[LEW05]: http://dl.acm.org/citation.cfm?id=1119614 "Smith, E., & Lewicki, M. S. (2005). *Efficient coding of time-relative structure using spikes*. Neural Computation, 17(1), 19-45."
