@@ -53,35 +53,27 @@ following authors:
 
 ## Dependencies
 
-The only dependencies are scikit-learn, numpy and scipy.
+The only dependencies are scikit-learn, matplotlib, numpy and scipy.
 
 No installation is required.
 
 ## Example
 
-Using the SimpleESN class is easy as:
+A straightforward example is:
 
 ```python
-from simple_esn import SimpleESN
-import numpy as np
-n_samples, n_features = 10, 5
-np.random.seed(0)
-X = np.random.randn(n_samples, n_features)
-esn = SimpleESN(n_readout = 2)
-echoes = esn.fit_transform(X)
-```
+from mdla import MultivariateDictLearning
+from mdla import multivariate_sparse_encode
+from np.linalg import norm
 
-It could also be part of a Pipeline:
+rng_global = np.random.RandomState(0)
+n_samples, n_features, n_dims = 10, 5, 3
+X = rng_global.randn(n_samples, n_features, n_dims)
 
-```python
-from simple_esn import SimpleESN
-# Pick your classifier
-pipeline = Pipeline([('esn', SimpleESN(n_readout=1000)),
-                     ('svr', svm.SVR())])
-parameters = {
-    'esn__weight_scaling': [0.5, 1.0],
-    'svr__C': [1, 10]
-}
-grid_search = GridSearchCV(pipeline, parameters)
-grid_search.fit(X_train, y_train)
+n_kernels = 8
+dico = MultivariateDictLearning(n_kernels=n_kernels, max_iter=10).fit(X)
+residual, code = multivariate_sparse_encode(X, dico)
+print ('Objective error for each samples is:')
+for i in range(len(r)):
+    print ('Sample', i, ':', norm(r[i], 'fro') + len(code[i]))
 ```
