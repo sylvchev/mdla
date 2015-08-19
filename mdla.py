@@ -13,15 +13,15 @@ from math import floor, ceil
 from numpy.lib.stride_tricks import as_strided
 from matplotlib.mlab import find
 
-from ..base import BaseEstimator, TransformerMixin
-from ..externals.joblib import Parallel, delayed, cpu_count
-from ..externals.six.moves import zip
-from ..utils import check_random_state, gen_even_slices
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.externals.joblib import Parallel, delayed, cpu_count
+from sklearn.externals.six.moves import zip
+from sklearn.utils import check_random_state, gen_even_slices
 
 # Pour array3d
 import scipy.sparse as sp
-from ..utils import assert_all_finite
-from ..utils.fixes import safe_copy
+from sklearn.utils import assert_all_finite
+from sklearn.utils.fixes import safe_copy
 
 # TODO:
 # - speed up by grouping decomposition+update as in pydico.
@@ -137,7 +137,6 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
         print ('[M-OMP # 0 ] residual is now')
         print (residual)
     
-    # TODO: check BLAS speed-up
     signal_energy = (signal**2).sum(1).mean()
     residual_energy = (residual**2).sum(1).mean()
 
@@ -183,7 +182,6 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
                    k_selected, 'at position', k_off)
         
         # Update decomposition coefficients
-        # TODO: BLAS speed-up
         v = np.array(selected_list.dot(selected_atom.flatten()), ndmin=2)
         b = np.array(Ainv[0:atoms_in_estimate,
                           0:atoms_in_estimate].dot(v.T),
@@ -288,8 +286,6 @@ def _multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         decomposition.append(d)
         residual.append(r)
     return residual, decomposition
-
-# TODO: ajouter un fonction qui decompose les signaux en batch, pour chaque batch fait une decomposition sur n_jobs puis update le dico.
 
 def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
                                n_jobs=1, verbose=False):
@@ -746,8 +742,6 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
     # if n_samples < n_kernels:
     #     print ('Too few examples, reducing the number of kernel to', n_samples)
     #     n_kernels = n_samples   
-    # TODO: Avoid integer division problems, check while test failed
-    # n_nonzero_coefs = float(n_nonzero_coefs)
     random_state = check_random_state(random_state)
 
     if n_jobs == -1:
@@ -768,14 +762,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         ind_kernels = random_state.permutation(n_samples)[:n_kernels]
         dictionary = [X[p[0], p[1]:p[1]+k_len, :] for p in zip(ind_kernels, offset)]
         dictionary = _normalize (dictionary)
-        # TODO = check fortran.
-        # for atom in dictionary:
-        #     atom = np.array(atom, order='F')
-        #     atom /= norm(atom)
         
-    # Fortran-order dict, as we are going to access its row vectors
-    # dictionary = np.array(dictionary, order='F')
-
     errors = []
     current_cost = np.nan
 
@@ -919,8 +906,6 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     # if n_samples < n_kernels:
     #     print ('Too few examples, reducing the number of kernel to', n_samples)
     #     n_kernels = n_samples   
-    # TODO: Avoid integer division problems
-    # n_nonzero_coefs = float(n_nonzero_coefs)
     random_state = check_random_state(random_state)
 
     if n_jobs == -1:
@@ -944,10 +929,6 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
         ind_kernels = random_state.permutation(n_samples)[:n_kernels]
         dictionary = [X[p[0], p[1]:p[1]+k_len, :] for p in zip(ind_kernels, offset)]
         dictionary = _normalize (dictionary)
-
-    # TODO = check fortran.
-    # Fortran-order dict, as we are going to access its row vectors
-    # dictionary = np.array(dictionary, order='F')
         
     errors = []
     current_cost = np.nan
@@ -1236,9 +1217,6 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
             raise ValueError('X should have more n_dims than n_features')
         if self.n_kernels < self.kernel_init_len:
             raise ValueError('X has more features than dictionary kernels')
-        # if n_samples < self.n_kernels:
-        #     print ('!! n_samples=%d, n_features=%d and n_kernels=%d\n'%(n_samples,n_features,self.n_kernels))
-        #     raise ValueError('There is more kernel than samples')
         
         code, dictionary, err = multivariate_dict_learning(X, self.n_kernels,
                     n_nonzero_coefs=self.n_nonzero_coefs,

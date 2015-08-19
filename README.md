@@ -1,8 +1,10 @@
 # MDLA - Multivariate Dictionary Learning Algorithm
 
+<!---
 [![Coverage Status](https://coveralls.io/repos/sylvchev/mdla/badge.svg?branch=master&service=github)](https://coveralls.io/github/sylvchev/mdla?branch=master)
 [![Travis CI](https://travis-ci.org/sylvchev/mdla.svg?branch=master)](https://travis-ci.org/sylvchev/mdla)
 [![Code Climate](https://codeclimate.com/github/sylvchev/mdla/badges/gpa.svg)](https://codeclimate.com/github/sylvchev/mdla)
+-->
 
 ## Dictionary Learning for the multivariate dataset
 
@@ -48,15 +50,6 @@ following authors:
 - Q. Barthélemy, C. Gouy-Pailler, Y. Isaac, A. Souloumiac, A. Larue,
   and J.I. Mars. *Multivariate temporal dictionary learning for
   EEG*. Journal of Neuroscience Methods, 215:19–28, 2013.
-
-
-
-## Useful links
-
--   Code from Mantas Lukoševičius: http://organic.elis.ugent.be/software/minimal
--   Code from Mantas Lukoševičius: http://minds.jacobs-university.de/mantas/code
--   More serious reservoir computing softwares: http://organic.elis.ugent.be/software
--   Scikit-learn, indeed: http://scikit-learn.org/
 
 ## Dependencies
 

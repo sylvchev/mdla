@@ -15,13 +15,13 @@ before_install:
   
 # Install packages
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION nose numpy scipy scikit-learn
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION nose numpy scipy scikit-learn matplotlib
   # Coverage packages are on Dan Blanchard binstar channel
   - conda install --yes -c dan_blanchard python-coveralls nose-cov
 
 # Run test
 script:
-  - nosetests --with-coverage --cover-package MYPACKAGE.py --logging-level=INFO
+  - nosetests --with-coverage --cover-package mdla.py --logging-level=INFO
 
 # Calculate coverage
 after_success:

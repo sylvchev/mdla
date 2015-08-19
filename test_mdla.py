@@ -8,10 +8,10 @@ from sklearn.utils.testing import assert_true
 # from sklearn.utils.testing import assert_less
 from sklearn.utils.testing import assert_raises
 
-from sklearn.decomposition import MultivariateDictLearning
-from sklearn.decomposition import MiniBatchMultivariateDictLearning
-from sklearn.decomposition import reconstruct_from_code
-from sklearn.decomposition import multivariate_sparse_encode
+from mdla import MultivariateDictLearning
+from mdla import MiniBatchMultivariateDictLearning
+from mdla import reconstruct_from_code
+from mdla import multivariate_sparse_encode
 
 rng_global = np.random.RandomState(0)
 n_samples, n_features, n_dims = 10, 5, 3
@@ -32,10 +32,6 @@ def test_mdla_shapes():
         
 def test_multivariate_input_shape():
     n_kernels = 4
-    dico = MultivariateDictLearning(n_kernels=n_kernels)
-    assert_raises(ValueError, dico.fit, X)
-
-    n_kernels = 11
     dico = MultivariateDictLearning(n_kernels=n_kernels)
     assert_raises(ValueError, dico.fit, X)
     

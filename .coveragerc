@@ -1,5 +1,5 @@
 [run]
-source = MYPACKAGE
+source = mdla
 omit =
     */python?.?/*
     */lib-python/?.?/*.py
@@ -7,4 +7,4 @@ omit =
     */site-packages/ordereddict.py
     */site-packages/nose/*
     */unittest2/*
-    UNTESTED_FILES
+    test_mdla*
