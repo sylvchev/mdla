@@ -223,7 +223,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
 
     return residual, decomposition
 
-def _multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
+def _multivariate_sparse_encode(X, kernels, n_nonzero_coefs=None,
                                 verbose=False):
     """Sparse coding multivariate signal
 
@@ -237,7 +237,7 @@ def _multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         Each sample is a matrix of shape (n_features, n_dims) with
         n_features >= n_dims.
 
-    dictionary: list of arrays 
+    kernels: list of arrays 
         The dictionary against which to solve the sparse coding of
         the data. The dictionary learned is a list of n_kernels
         elements. Each element is a convolution kernel, i.e. an
@@ -267,7 +267,7 @@ def _multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     SparseCoder
     """
     n_samples, n_features, n_dims = X.shape
-    n_kernels = len(dictionary)
+    n_kernels = len(kernels)
     
     if n_nonzero_coefs is None:
         raise ValueError("The sparsity should be indicated")
@@ -280,7 +280,7 @@ def _multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     decomposition = list()
     residual = list()
     for k in range(n_samples):
-        r, d = _multivariate_OMP(X[k,:,:], dictionary,
+        r, d = _multivariate_OMP(X[k,:,:], kernels,
                                  n_nonzero_coefs,
                                  verbose)
         decomposition.append(d)
@@ -303,7 +303,7 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         Each sample is a matrix of shape (n_features, n_dims) with
         n_features >= n_dims.
 
-    dictionary: list of arrays
+    dictionary: list of arrays or MultivariateDictLearning instance
         The dictionary against which to solve the sparse coding of
         the data. The dictionary learned is a list of n_kernels
         elements. Each element is a convolution kernel, i.e. an
@@ -342,17 +342,18 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     
     n_samples, n_features, n_dims = X.shape
     if isinstance(dictionary, MultivariateDictLearning) or \
-       isinstance(dictionary, MultivariateDictLearning):
+       isinstance(dictionary, MiniBatchMultivariateDictLearning):
        n_kernels = dictionary.n_kernels
-       dictionary = dictionary.kernels_
+       kernels = dictionary.kernels_
     else:
        n_kernels = len(dictionary)
+       kernels = dictionary
 
     if n_nonzero_coefs is None:
         n_nonzero_coefs = max(n_features / 10, 1)
     
     if n_jobs == 1:
-        r, d = _multivariate_sparse_encode(X, dictionary,
+        r, d = _multivariate_sparse_encode(X, kernels,
                                            n_nonzero_coefs,
                                            verbose)
         return r, d
@@ -367,7 +368,7 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     # res_views, code_views
     views = Parallel(n_jobs=n_jobs)(
         delayed(_multivariate_sparse_encode)(
-            X[this_slice], dictionary, n_nonzero_coefs, verbose)
+            X[this_slice], kernels, n_nonzero_coefs, verbose)
         for this_slice in slices)
     # for this_slice, this_res, this_code in zip(slices, res_views, code_views):
     for this_res, this_code in views:
