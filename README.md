@@ -1,10 +1,8 @@
 # MDLA - Multivariate Dictionary Learning Algorithm
 
-<!---
 [![Coverage Status](https://coveralls.io/repos/sylvchev/mdla/badge.svg?branch=master&service=github)](https://coveralls.io/github/sylvchev/mdla?branch=master)
 [![Travis CI](https://travis-ci.org/sylvchev/mdla.svg?branch=master)](https://travis-ci.org/sylvchev/mdla)
 [![Code Climate](https://codeclimate.com/github/sylvchev/mdla/badges/gpa.svg)](https://codeclimate.com/github/sylvchev/mdla)
--->
 
 ## Dictionary Learning for the multivariate dataset
 
@@ -28,7 +26,7 @@ dimension than an input samples.
 
 ![dictionaries](https://github.com/sylvchev/mdla/raw/master/img/multidico.png)
 
-(figure from [Chevallier et al., 2014][CHE14] )
+(figure from [Chevallier et al., 2014](#Bibliography) )
 
 To handle timeseries, two major modifications are brought to DLA:
 1. extension to **multivariate** samples
@@ -42,7 +40,7 @@ kernels occuring at different time steps.
 
 ![shift invariance](https://github.com/sylvchev/mdla/raw/master/img/audio4spikegram.png)
 
-(figure from [Smith & Lewicki, 2005][LEW05])
+(figure from [Smith & Lewicki, 2005](#Bibliography))
 
 The proposed implementation is an adaptation of the work of the
 following authors:
@@ -85,6 +83,12 @@ for i in range(len(r)):
 
 ## Bibliography
 
-[CHE14]: http://dx.doi.org/10.1109/ICASSP.2014.6854993 "Chevallier, S., Barthelemy, Q., & Atif, J. (2014, May). *Subspace metrics for multivariate dictionaries and application to EEG*. In Acoustics, Speech and Signal Processing (ICASSP), 2014 IEEE International Conference on (pp. 7178-7182). IEEE."
+- [Chevallier, S., Barthelemy, Q., & Atif, J. (2014). *Subspace metrics for multivariate dictionaries and application to EEG*. In Acoustics, Speech and Signal Processing (ICASSP), IEEE International Conference on (pp. 7178-7182).][CHE14]
+- [Smith, E., & Lewicki, M. S. (2005). *Efficient coding of time-relative structure using spikes*. Neural Computation, 17(1), 19-45][LEW05]
 
-[LEW05]: http://dl.acm.org/citation.cfm?id=1119614 "Smith, E., & Lewicki, M. S. (2005). *Efficient coding of time-relative structure using spikes*. Neural Computation, 17(1), 19-45."
+[CHE14]: http://dx.doi.org/10.1109/ICASSP.2014.6854993 "Chevallier et
+al., 2014"
+
+[LEW05]: http://dl.acm.org/citation.cfm?id=1119614 "Smith &
+Lewicki, 2005"
+
