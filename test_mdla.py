@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 
 from sklearn.utils.testing import assert_almost_equal
@@ -172,14 +173,14 @@ def test_multivariate_OMP():
             for j in range(decomposition[i].shape[0]):
                 sorted_decomposition[j] = tuple(decomposition[i][j,:].tolist())
             sorted_decomposition.sort(order=['f0'], axis=0)
-            for j in reversed(sorted_decomposition): print j
+            for j in reversed(sorted_decomposition): print (j)
         
             # decomposition found by OMP, also sorted
             sorted_d = np.zeros_like(d[i]).view('float, int, int')
             for j in range(d[i].shape[0]):
                 sorted_d[j] = tuple(d[i][j,:].tolist())
             sorted_d.sort(order=['f0'], axis=0)
-            for j in reversed(sorted_d): print j
+            for j in reversed(sorted_d): print (j)
             
     assert_array_almost_equal(reconstruct_from_code(d, dico, n_features),
                              signals, decimal=3)
@@ -239,4 +240,4 @@ def _verif_OMP():
         for sig, rec in zip(signals, reconstructed):
             residual_energy += ((sig-rec)**2).sum(1).mean()
 
-        print 'Mean energy of the', n_samples, 'residuals for', (n_features, n_dims), 'features and', n_kernels, 'kernels of', (kernel_init_len, n_dims),' is', residual_energy/n_samples
+        print ('Mean energy of the', n_samples, 'residuals for', (n_features, n_dims), 'features and', n_kernels, 'kernels of', (kernel_init_len, n_dims),' is', residual_energy/n_samples)
