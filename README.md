@@ -26,7 +26,7 @@ dimension than an input samples.
 
 ![dictionaries](https://github.com/sylvchev/mdla/raw/master/img/multidico.png)
 
-(figure from [Chevallier et al., 2014](#Bibliography) )
+(figure from [Chevallier et al., 2014](#biblio) )
 
 To handle timeseries, two major modifications are brought to DLA:
 1. extension to **multivariate** samples
@@ -40,7 +40,7 @@ kernels occuring at different time steps.
 
 ![shift invariance](https://github.com/sylvchev/mdla/raw/master/img/audio4spikegram.png)
 
-(figure from [Smith & Lewicki, 2005](#Bibliography))
+(figure from [Smith & Lewicki, 2005](#biblio))
 
 The proposed implementation is an adaptation of the work of the
 following authors:
@@ -81,14 +81,12 @@ for i in range(len(r)):
     print ('Sample', i, ':', norm(r[i], 'fro') + len(code[i]))
 ```
 
-## Bibliography
+## <a id="biblio"></a>Bibliography
 
-- [Chevallier, S., Barthelemy, Q., & Atif, J. (2014). *Subspace metrics for multivariate dictionaries and application to EEG*. In Acoustics, Speech and Signal Processing (ICASSP), IEEE International Conference on (pp. 7178-7182).][CHE14]
-- [Smith, E., & Lewicki, M. S. (2005). *Efficient coding of time-relative structure using spikes*. Neural Computation, 17(1), 19-45][LEW05]
+- Chevallier, S., Barthelemy, Q., & Atif, J. (2014). [*Subspace metrics for multivariate dictionaries and application to EEG*][1]. In Acoustics, Speech and Signal Processing (ICASSP), IEEE International Conference on (pp. 7178-7182).
+- Smith, E., & Lewicki, M. S. (2005). [*Efficient coding of time-relative structure using spikes*][2]. Neural Computation, 17(1), 19-45
 
-[CHE14]: http://dx.doi.org/10.1109/ICASSP.2014.6854993 "Chevallier et
-al., 2014"
+[1]: http://dx.doi.org/10.1109/ICASSP.2014.6854993 "Chevallier et al., 2014"
 
-[LEW05]: http://dl.acm.org/citation.cfm?id=1119614 "Smith &
-Lewicki, 2005"
+[2]: http://dl.acm.org/citation.cfm?id=1119614 "Smith and Lewicki, 2005"
 
