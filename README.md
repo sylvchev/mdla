@@ -65,9 +65,10 @@ No installation is required.
 A straightforward example is:
 
 ```python
+import numpy as np
 from mdla import MultivariateDictLearning
 from mdla import multivariate_sparse_encode
-from np.linalg import norm
+from numpy.linalg import norm
 
 rng_global = np.random.RandomState(0)
 n_samples, n_features, n_dims = 10, 5, 3
@@ -77,8 +78,8 @@ n_kernels = 8
 dico = MultivariateDictLearning(n_kernels=n_kernels, max_iter=10).fit(X)
 residual, code = multivariate_sparse_encode(X, dico)
 print ('Objective error for each samples is:')
-for i in range(len(r)):
-    print ('Sample', i, ':', norm(r[i], 'fro') + len(code[i]))
+for i in range(len(residual)):
+    print ('Sample', i, ':', norm(residual[i], 'fro') + len(code[i]))
 ```
 
 ## <a id="biblio"></a>Bibliography

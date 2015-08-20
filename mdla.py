@@ -341,7 +341,12 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         tstart = time.time()
     
     n_samples, n_features, n_dims = X.shape
-    n_kernels = len(dictionary)
+    if isinstance(dictionary, MultivariateDictLearning) or \
+       isinstance(dictionary, MultivariateDictLearning):
+       n_kernels = dictionary.n_kernels
+       dictionary = dictionary.kernels_
+    else:
+       n_kernels = len(dictionary)
 
     if n_nonzero_coefs is None:
         n_nonzero_coefs = max(n_features / 10, 1)
