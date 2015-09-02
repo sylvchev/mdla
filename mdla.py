@@ -1209,7 +1209,7 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
         if hasattr(self, 'kernels_'):
             self.dict_init = _normalize(list(self.kernels_))
             if self.verbose >= 1:
-                print ('\nWarm restart with existing kernels\n')
+                print ('\nWarm restart with existing kernels')
                 # print (self.kernels_[7])
                 # print ('')
         if self.dict_init is not None:

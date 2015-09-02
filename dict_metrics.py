@@ -11,6 +11,8 @@ atoms.
 # Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 # License: GPL v3 
 
+# TODO: add docstring to criteria fonction
+
 import numpy as np
 import numpy.linalg as la
 import scipy.linalg as sl
@@ -299,4 +301,68 @@ def emd(D1, D2, gdist, scale=False):
             return (sqrt(2.)-d)/sqrt(2.)*100.
         else:
             return d*100.
+
+def computeCorrelation(s, D):
+    corr = np.zeros((len(D), s.shape[1]))
+    for i in range(len(D)): # for all atoms
+        corrTmp = 0
+        for j in range(s.shape[0]): # for all dimensions
+            corrTmp += np.correlate(s[j,:],D[i][j,:])
+        corr[i,:len(corrTmp)] = corrTmp
+    return corr
+
+def detectionRate(dictRef, dictLearn, threshold):
+    nbDR = 0
+    corr = np.zeros((len(dictRef), len(dictLearn)))
+    for i in range(len(dictRef)):
+        corrTmp = computeCorrelation(np.hstack((np.zeros((dictRef[0].shape[0],5)), dictRef[i], np.zeros((dictRef[0].shape[0],5)))), dictLearn)
+        for j in range(len(dictLearn)):
+            idxMax = np.argmax(np.abs(corrTmp[j,:]))
+            corr[i,j] = corrTmp[j,idxMax]
+    corrLocal = np.abs(corr.copy())
+    for i in range(len(dictRef)):
+        maxCorr = corrLocal.max()
+        if maxCorr >= threshold: nbDR+=1
+        idxMax = np.unravel_index(corrLocal.argmax(), corrLocal.shape)
+        corrLocal[:,idxMax[1]] = np.zeros(len(dictRef))
+        corrLocal[idxMax[0],:] = np.zeros(len(dictLearn))
+    return float(nbDR)/len(dictLearn)*100.
+
+def precisionRecall(dictRef, dictLearn, threshold):
+    dr = 0
+    D1 = np.array(dictRef)
+    M  = D1.shape[0]
+    N  = D1.shape[2]
+    D1 = D1.reshape((M, N))
+    D2 = np.array(dictLearn)
+    D2 = D2.reshape((M, N))
+    corr = D1.dot(D2.T)
+    precision = float((np.max(corr, axis=0) > threshold).sum()) / float(M)
+    recall    = float((np.max(corr, axis=1) > threshold).sum()) / float(M)
+    return precision*100., recall*100.
+
+def precisionRecallPoints(dictRef, dictLearn):
+    dr = 0
+    D1 = np.array(dictRef)
+    M  = D1.shape[0]
+    N  = D1.shape[2]
+    D1 = D1.reshape((M, N))
+    D2 = np.array(dictLearn)
+    D2 = D2.reshape((M, N))
+    corr = D1.dot(D2.T)
+    precision = np.max(corr, axis=0)
+    recall    = np.max(corr, axis=1)
+    return precision, recall
+
+def betaDist(dictRef, dictLearn):
+    dr = 0
+    D1 = np.array(dictRef)
+    M  = D1.shape[0]
+    N  = D1.shape[2]
+    D1 = D1.reshape((M, N))
+    D2 = np.array(dictLearn)
+    D2 = D2.reshape((M, N))
+    corr = D1.dot(D2.T)
+    return (np.sum(np.arccos(np.max(corr, axis=0))) + np.sum(np.arccos(np.max(corr, axis=1)))) / (2*M)
+
 
