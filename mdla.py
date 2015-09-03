@@ -1357,7 +1357,7 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
         if hasattr(self, 'kernels_'):
             self.dict_init = _normalize(list(self.kernels_))
             if self.verbose:
-                print ('\nWarm restart with existing kernels_\n')
+                print ('\nWarm restart with existing kernels_')
                 # print (self.kernels_[7])
                 # print ('')
         if self.dict_init is not None:

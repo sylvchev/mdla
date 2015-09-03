@@ -1,11 +1,14 @@
 """Dictionary recovering experiment for univariate random dataset"""
 import numpy as np
 import matplotlib.pyplot as plt
-from mdla import MultivariateDictLearning
+from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
 from mdla import multivariate_sparse_encode
 from dict_metrics import hausdorff, emd, detectionRate
 from numpy.linalg import norm
 from numpy import array, arange
+
+# TODO: Add SNR, repeat experiments to make stats, make a fast and a 
+#       long version, use callback to compute distance
 
 def plot_univariate(objective_error, detection_rate, wasserstein, figname):
     fig = plt.figure(figsize=(10,6))
@@ -78,17 +81,17 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
 rng_global = np.random.RandomState(0)
 n_samples, n_features, n_dims = 1500, 50, 1
 n_nonzero_coefs = 3
-n_kernels, max_iter, kernel_init_len, learning_rate = 50, 20, 50, 1.5
-n_jobs = -1
+n_kernels, max_iter, kernel_init_len, learning_rate = 50, 5, 50, 1.5
+n_jobs, batch_size = 4, 50
 detection_rate, wasserstein, objective_error = list(), list(), list()
-recov = zeros((max_iter))
 
 generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
                                              n_kernels, n_samples, n_features,
                                              n_dims)
 
 # Create a dictionary
-learned_dict = MultivariateDictLearning(n_kernels=n_kernels, max_iter=1,
+learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels, 
+                                batch_size=batch_size, n_iter=5,
                                 n_nonzero_coefs=n_nonzero_coefs,
                                 n_jobs=n_jobs, learning_rate=learning_rate,
                                 kernel_init_len=kernel_init_len, verbose=1,
@@ -106,12 +109,6 @@ for i in range(max_iter):
     # Get the objective error
     objective_error.append(array(learned_dict.error_ ).sum())
     
-
-    
-
-
-# residual, code = multivariate_sparse_encode(X, dico)
-# print ('Objective error for each samples is:')
-# for i in range(len(residual)):
-#     print ('Sample', i, ':', norm(residual[i], 'fro') + len(code[i]))
+plot_univariate(array(objective_error), array(detection_rate),
+                array(wasserstein), 'univariate-case')
     
