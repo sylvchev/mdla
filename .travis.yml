@@ -15,9 +15,10 @@ before_install:
   
 # Install packages
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION nose numpy scipy scikit-learn matplotlib
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION nose numpy scipy scikit-learn matplotlib cvxopt
   # Coverage packages are on Dan Blanchard binstar channel
   - conda install --yes -c dan_blanchard python-coveralls nose-cov
+  # - conda install --yes -c https://conda.binstar.org/anaconda cvxopt
 
 # Run test
 script:
