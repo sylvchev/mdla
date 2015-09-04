@@ -88,7 +88,7 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
     return dico, signals, decomposition
 
 rng_global = np.random.RandomState(1)
-n_samples, n_dims = 1500, 1
+n_samples, n_dims = 1500, 3
 n_features = kernel_init_len = 20
 n_nonzero_coefs = 3
 n_kernels, max_iter, learning_rate = 50, 25, 1.5
