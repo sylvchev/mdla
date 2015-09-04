@@ -78,11 +78,12 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
 
     return dico, signals, decomposition
 
-rng_global = np.random.RandomState(0)
-n_samples, n_features, n_dims = 1500, 50, 1
+rng_global = np.random.RandomState(1)
+n_samples, n_dims = 1500, 1
+n_features = kernel_init_len = 20
 n_nonzero_coefs = 3
-n_kernels, max_iter, kernel_init_len, learning_rate = 50, 5, 50, 1.5
-n_jobs, batch_size = 4, 50
+n_kernels, max_iter, learning_rate = 50, 20, 1.5
+n_jobs, batch_size = 4, 1
 detection_rate, wasserstein, objective_error = list(), list(), list()
 
 generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
