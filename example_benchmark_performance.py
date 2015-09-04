@@ -1,4 +1,5 @@
-"""Dictionary recovering experiment for univariate random dataset"""
+"""Benchmarking dictionary learning algorithms on random dataset"""
+from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
@@ -8,7 +9,39 @@ from numpy.linalg import norm
 from numpy import array, arange, zeros
 from numpy.random import rand, randn, permutation, randint
 from time import time
-from multiprocessing import cpu_count()
+from multiprocessing import cpu_count
+
+def benchmarking_plot(figname, pst, plot_sep, minibatchRange,
+                                   mprocessRange):
+    fig = plt.figure(figsize=(15,10))
+    bar_width = 0.35
+    rects = plt.bar(np.array([0]), pst[0], bar_width, color='b',
+                    label='Online, no multiprocessing (baseline)')
+    index = [0]
+    for i in range(1, plot_sep[1]):
+        if i == 1:
+            rects = plt.bar(np.array([i+1]), pst[i], bar_width,
+                            color='r', label='Online with minibatch')
+        else:
+            rects = plt.bar(np.array([i+1]), pst[i], bar_width, color='r')
+        index.append(i+1)
+    for i in range(plot_sep[1], plot_sep[2]):
+        if i == plot_sep[1]:
+            rects = plt.bar(np.array([i+2]), pst[i], bar_width,
+                            label='Batch with multiprocessing', color='magenta')
+        else:
+            rects = plt.bar(np.array([i+2]), pst[i], bar_width, color='magenta')
+        index.append(i+2)
+        
+    plt.ylabel('Time per iteration (s)')
+    plt.title('Processing time for online and batch processing')
+    tick = ['']
+    tick.extend(map(str,minibatchRange))
+    tick.extend(map(str,mprocessRange))
+    plt.xticks(index, tuple(tick))
+    plt.legend()
+    plt.savefig(figname+'.png')
+
 
 def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
                       n_samples=10, n_features=5, n_dims=3, snr=1000):
@@ -64,6 +97,8 @@ generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
                                              n_dims)
 
 # Online without mini-batch
+print ('Processing ', max_iter, 'iterations in online mode, '
+       'without multiprocessing')
 batch_size, n_jobs =n_samples, 1
 learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels, 
                                 batch_size=batch_size, n_iter=max_iter,
@@ -79,29 +114,46 @@ plot_separator.append(it_separator)
 
 # Online with mini-batch
 minibatch_range = [cpu_count()]
-minibatch_range.extend([cpu_count()*i for i in range(5, 21, 5)])
+minibatch_range.extend([cpu_count()*i for i in range(3, 10, 2)])
 n_jobs = -1
 for mb in minibatch_range:
+    print ('\nProcessing ', max_iter, 'iterations in online mode, with ',
+           'minibatch size', mb, 'and', cpu_count(), 'processes.')
+    batch_size = mb
+    learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels, 
+                                batch_size=batch_size, n_iter=max_iter,
+                                n_nonzero_coefs=n_nonzero_coefs,
+                                n_jobs=n_jobs, learning_rate=learning_rate,
+                                kernel_init_len=kernel_init_len, verbose=1,
+                                dict_init=None, random_state=rng_global)
+    ts = time()
+    learned_dict = learned_dict.fit(X)
+    iter_time.append((time()-ts) / max_iter)
+    it_separator += 1
+plot_separator.append(it_separator)
     
-
 # Batch learning
+mp_range = range(1, cpu_count()+1)
+for p in mp_range:
+    print ('\nProcessing ', max_iter, 'iterations in batch mode, with',
+           p, 'processes.')
+    n_jobs = p
+    learned_dict = MultivariateDictLearning(n_kernels=n_kernels, 
+                                max_iter=max_iter, verbose=1,
+                                n_nonzero_coefs=n_nonzero_coefs,
+                                n_jobs=n_jobs, learning_rate=learning_rate,
+                                kernel_init_len=kernel_init_len, 
+                                dict_init=None, random_state=rng_global)
+    ts = time()
+    learned_dict = learned_dict.fit(X)
+    iter_time.append((time()-ts) / max_iter)
+    it_separator += 1
+plot_separator.append(it_separator)
+print ('Done benchmarking')
 
-# Batch learning with one process
+figname = 'minibatch-performance'
+print ('Plotting results in', figname)
+benchmarking_plot(figname, iter_time, plot_separator, minibatch_range, mp_range)
 
-# Create a dictionary
-# Update learned dictionary at each iteration and compute a distance
-# with the generating dictionary
-for i in range(max_iter):
-    learned_dict = learned_dict.partial_fit(X)
-    # Compute the detection rate
-    detection_rate.append(detectionRate(learned_dict.kernels_,
-                                        generating_dict, 0.97))
-    # Compute the Wasserstein distance
-    wasserstein.append(emd(learned_dict.kernels_, generating_dict,
-                        'chordal', scale=True))
-    # Get the objective error
-    objective_error.append(array(learned_dict.error_ ).sum())
-    
-plot_univariate(array(objective_error), array(detection_rate),
-                array(wasserstein), 'univariate-case')
-    
+print ('Exiting.')
+
