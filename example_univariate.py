@@ -100,12 +100,15 @@ generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
                                              n_dims)
 
 # Create a dictionary
+dict_init = [rand(kernel_init_len, n_dims) for i in range(n_kernels)]
+for i in range(len(dict_init)):
+    dict_init[i] /= norm(dict_init[i], 'fro')
 learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels, 
                                 batch_size=batch_size, n_iter=1,
                                 n_nonzero_coefs=n_nonzero_coefs,
                                 n_jobs=n_jobs, learning_rate=learning_rate,
                                 kernel_init_len=kernel_init_len, verbose=1,
-                                dict_init=None, random_state=rng_global)
+                                dict_init=dict_init, random_state=rng_global)
 # Update learned dictionary at each iteration and compute a distance
 # with the generating dictionary
 for i in range(max_iter):
