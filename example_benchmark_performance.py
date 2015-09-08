@@ -98,7 +98,7 @@ generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
 
 # Online without mini-batch
 print ('Processing ', max_iter, 'iterations in online mode, '
-       'without multiprocessing')
+       'without multiprocessing:', end='')
 batch_size, n_jobs =n_samples, 1
 learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels, 
                                 batch_size=batch_size, n_iter=max_iter,
@@ -118,7 +118,7 @@ minibatch_range.extend([cpu_count()*i for i in range(3, 10, 2)])
 n_jobs = -1
 for mb in minibatch_range:
     print ('\nProcessing ', max_iter, 'iterations in online mode, with ',
-           'minibatch size', mb, 'and', cpu_count(), 'processes.')
+           'minibatch size', mb, 'and', cpu_count(), 'processes:', end='')
     batch_size = mb
     learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels, 
                                 batch_size=batch_size, n_iter=max_iter,
@@ -136,7 +136,7 @@ plot_separator.append(it_separator)
 mp_range = range(1, cpu_count()+1)
 for p in mp_range:
     print ('\nProcessing ', max_iter, 'iterations in batch mode, with',
-           p, 'processes.')
+           p, 'processes:', end='')
     n_jobs = p
     learned_dict = MultivariateDictLearning(n_kernels=n_kernels, 
                                 max_iter=max_iter, verbose=1,
