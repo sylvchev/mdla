@@ -1,15 +1,14 @@
-""" Multivariate dictionary learning
-"""
+""" Multivariate dictionary learning"""
 from __future__ import print_function
 # Author: Sylvain Chevallier
 # License: GPL v3
 
-import time
 import sys
 import itertools
 
 import numpy as np
 from math import floor, ceil
+from time import time
 from numpy.lib.stride_tricks import as_strided
 from matplotlib.mlab import find
 
@@ -124,8 +123,9 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
     selected_atom = _shift_and_extend(dictionary[k_selected],
                                       n_features, k_off)
 
+    if verbose >= 3:
+        print ('[M-OMP # 0 ] kernel', k_selected, 'is selected with amplitude', k_amplitude)
     if verbose >= 4:
-        print ('[M-OMP # 0 ] atom ', k_selected, 'is selected with amplitude', k_amplitude)
         print (selected_atom)
         
     # List of selected atoms is flatten
@@ -140,14 +140,11 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
     signal_energy = (signal**2).sum(1).mean()
     residual_energy = (residual**2).sum(1).mean()
 
-    if verbose >= 4:
+    if verbose >= 3:
         print ('[M-OMP # 0 ] signal energy is', signal_energy,
                'and residual energy is', residual_energy)
 
     decomposition[0, :] = np.array([k_amplitude, k_off, k_selected])
-    if verbose >= 4:
-        print ('[M-OMP # 0 ] Found kernel', k_selected,
-               'at position', k_off)
 
     # Main loop
     atoms_in_estimate = 1
@@ -162,7 +159,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
                                      'valid')
             correlation_score[i, :len(corr)] = corr
         if verbose >= 4:
-            print ('[M-OMP #', atoms_in_estimate, ' ] correlation is', correlation_score)
+            print ('[M-OMP #', atoms_in_estimate, '] correlation is', correlation_score)
         (k_selected, k_off) = np.unravel_index(
             np.argmax(np.abs(correlation_score)),
             correlation_score.shape)
@@ -177,8 +174,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             break
         selected_atom = _shift_and_extend(dictionary[k_selected],
                                           n_features, k_off)
-        if verbose >= 4:
-            print ('[M-OMP #', atoms_in_estimate, '] Found kernel',
+        if verbose >= 3:
+            print ('[M-OMP #', atoms_in_estimate, '] kernel',
                    k_selected, 'at position', k_off)
         
         # Update decomposition coefficients
@@ -213,6 +210,11 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             
             estimated_signal[k_off:k_off+k_len, :] += (k_amp * dictionary[k_kernel])
         residual = signal - estimated_signal
+
+        if verbose >= 3:
+            residual_energy = (residual**2).sum(1).mean()
+            print ('[M-OMP #', atoms_in_estimate-1, '] signal energy is',
+                   signal_energy, 'and residual energy is', residual_energy)
         
     # End big loop
     decomposition = decomposition[0:atoms_in_estimate, :]
@@ -338,7 +340,7 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     SparseCoder
     """
     if verbose >= 2:
-        tstart = time.time()
+        tstart = time()
     
     n_samples, n_features, n_dims = X.shape
     if isinstance(dictionary, MultivariateDictLearning) or \
@@ -376,7 +378,7 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         decompositions.extend(this_code)
 
     if verbose >= 3:
-        print ('sparse decomposition: ', time.time()-tstart, 's')
+        print ('sparse decomposition: ', time()-tstart, 's')
         
     return residuals, decompositions
 
@@ -570,9 +572,8 @@ def _update_dict(dictionary, decomposition, residual,
     #     print (dictionary[7])
 
     if verbose >= 2:
-        tstart = time.time()
+        tstart = time()
 
-    
     gradients = list()
     for c, r in zip(decomposition, residual):
         g = _compute_gradient(dictionary, c, r, learning_rate, random_state, verbose)
@@ -594,7 +595,7 @@ def _update_dict(dictionary, decomposition, residual,
     dictionary = _normalize(dictionary)
 
     if verbose >= 3:
-        print ('dict update: ', time.time()-tstart, 's')
+        print ('dict update: ', time()-tstart, 's')
 
     # if verbose >= 1:
     #     diff = grad = 0.
@@ -743,7 +744,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
     SparsePCA
     MiniBatchSparsePCA
     """
-    t0 = time.time()
+    t0 = time()
     n_samples, n_features, n_dims = X.shape
     # if n_samples < n_kernels:
     #     print ('Too few examples, reducing the number of kernel to', n_samples)
@@ -776,7 +777,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         print('\n[dict_learning]', end=' ')
 
     for ii in range(max_iter):
-        dt = (time.time() - t0)
+        dt = (time() - t0)
         if verbose >= 2:
             print ("[MDL] Iteration % 3i "
                    "(elapsed time: % 3is, % 4.1fmn, current cost % 7.3f)"
@@ -796,7 +797,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
                             residual=r, verbose=verbose,
                             learning_rate=mu, random_state=random_state)
             if verbose >= 2:
-                print ('[MDL] Dictionary update, iteration', ii,
+                print ('[MDL] Dictionary updated, iteration', ii,
                        'with learning rate', mu)
 
             # Cost function
@@ -811,6 +812,9 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         if ii > 0:
             dE = abs(errors[-2] - errors[-1])
             # assert(dE >= -tol * errors[-1])
+            if ii == 1 and verbose == 1:
+                print ('Expecting this learning experiment to finish in',
+                       (time()-t0)*max_iter/60., 'm')
             if dE < tol * errors[-1]:
                 if verbose >= 1:
                     # A line return
@@ -906,7 +910,7 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     SparsePCA
     MiniBatchSparsePCA
     """
-    t0 = time.time()
+    t0 = time()
     
     n_samples, n_features, n_dims = X.shape
     # if n_samples < n_kernels:
@@ -955,7 +959,7 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
         print ('[MDL] Using %d jobs and %d batch of %d examples' % (n_jobs, n_batches, batch_size))
 
     for ii, this_X in zip(range(iter_offset*int(n_batches), (iter_offset + n_iter)*int(n_batches)), batches):
-        dt = (time.time() - t0)
+        dt = (time() - t0)
 
         try:
             r, code = multivariate_sparse_encode(this_X, dictionary,
@@ -971,12 +975,20 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
 
             if np.mod((ii-iter_offset),int(n_batches))==0:
                 if verbose >= 2:
-                    print ('[MDL] Dictionary update, iteration %d with learning rate %.2f (elapsed time: % 3is, % 4.1fmn)'% ((ii-iter_offset)/int(n_batches), mu, dt, dt / 60))
+                    print ('[MDL] Dictionary updated, iteration %d '\
+                           'with learning rate %.2f (elapsed time: '\
+                           '% 3is, % 4.1fmn)'%
+                           ((ii-iter_offset)/int(n_batches), mu, dt, dt / 60))
                 elif verbose == 1:
                     sys.stdout.write(".")
                     sys.stdout.flush()
                 if callback is not None:
                     callback(locals())
+
+            if ii == 1 and verbose == 1:
+                print ('Expecting this learning experiment to finish in',
+                       (time()-t0)*(n_iter-iter_offset)/60., 'm')
+
 
             # Cost function
             current_cost = 0.0
@@ -985,9 +997,9 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
             errors.append(current_cost/len(r))
         except KeyboardInterrupt:
             break
-
+    
     if verbose >= 2:
-        dt = (time.time() - t0)
+        dt = (time() - t0)
         print ('[MDL] learning done (total time: % 3is, % 4.1fmn)' % (dt, dt / 60))
 
     return dictionary, errors
