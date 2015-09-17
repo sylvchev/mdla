@@ -1,4 +1,5 @@
 """Benchmarking dictionary learning algorithms on random dataset"""
+
 from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +11,9 @@ from numpy import array, arange, zeros
 from numpy.random import rand, randn, permutation, randint
 from time import time
 from multiprocessing import cpu_count
+
+# TODO:
+# investigate perf break from pydico
 
 def benchmarking_plot(figname, pst, plot_sep, minibatchRange,
                                    mprocessRange):
