@@ -98,101 +98,52 @@ def decomposition_random_dictionary(Gaussian=True, rng=None, n_features=65,
             rmse[k, idx] = norm(r[0], 'fro')/norm(s, 'fro')*100
     return rmse
 
-rmse_gaussian = decomposition_random_dictionary(Gaussian=True, rng=rng_global,
+rmse_gaussian1 = decomposition_random_dictionary(Gaussian=True, rng=rng_global,
                                                 n_features=65, n_dims=1)
-
-rmse_uniform = decomposition_random_dictionary(Gaussian=False, rng=rng_global,
+rmse_uniform1 = decomposition_random_dictionary(Gaussian=False, rng=rng_global,
                                                 n_features=65, n_dims=1)
-
-fig = plt.figure(figsize=(10,8))
-plt.title(r'Initialization of the random univariate dictionary')
-km = fig.add_subplot(1,1,1)
-km.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform.mean(1),
-            yerr=rmse_uniform.std(1), label='Uniform')
-km.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian.mean(1),
-            yerr=rmse_gaussian.std(1), color='r', label='Gaussian')
-km.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
-km.axis([0, n_nonzero_coefs+1, 0, 90])
-km.set_xticks(range(0, n_nonzero_coefs+2, 5))
-km.set_xlabel('k')
-km.set_ylabel('rRMSE (%)')
-km.legend(loc='upper right')
-plt.savefig('sparse_decomposition_univariate.png')
-
-rmse_gaussian = decomposition_random_dictionary(Gaussian=True, rng=rng_global,
+rmse_gaussian2 = decomposition_random_dictionary(Gaussian=True, rng=rng_global,
+                                                n_features=65, n_dims=3)
+rmse_uniform2 = decomposition_random_dictionary(Gaussian=False, rng=rng_global,
+                                                n_features=65, n_dims=3)
+rmse_gaussian3 = decomposition_random_dictionary(Gaussian=True, rng=rng_global,
+                                                n_features=65, n_dims=5)
+rmse_uniform3 = decomposition_random_dictionary(Gaussian=False, rng=rng_global,
                                                 n_features=65, n_dims=5)
 
-rmse_uniform = decomposition_random_dictionary(Gaussian=False, rng=rng_global,
-                                                n_features=65, n_dims=5)
-
-fig = plt.figure(figsize=(10,8))
-plt.title(r'Initialization of the random multivariate dictionary')
-km = fig.add_subplot(1,1,1)
-km.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform.mean(1),
-            yerr=rmse_uniform.std(1), label='Uniform')
-km.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian.mean(1),
-            yerr=rmse_gaussian.std(1), color='r', label='Gaussian')
-km.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
-km.axis([0, n_nonzero_coefs+1, 0, 90])
-km.set_xticks(range(0, n_nonzero_coefs+2, 5))
-km.set_xlabel('k')
-km.set_ylabel('rRMSE (%)')
-km.legend(loc='upper right')
+fig = plt.figure(figsize=(15,5))
+uni = fig.add_subplot(1,3,1)
+uni.set_title(r'Random univariate (n=1) dictionary')
+uni.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform1.mean(1),
+            yerr=rmse_uniform1.std(1), label='Uniform')
+uni.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian1.mean(1),
+            yerr=rmse_gaussian1.std(1), color='r', label='Gaussian')
+uni.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
+uni.axis([0, n_nonzero_coefs+1, 0, 90])
+uni.set_xticks(range(0, n_nonzero_coefs+2, 5))
+uni.set_ylabel('rRMSE (%)')
+uni.legend(loc='upper right')
+mul1 = fig.add_subplot(1,3,2)
+mul1.set_title(r'Random multivariate (n=3) dictionary')
+mul1.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform2.mean(1),
+            yerr=rmse_uniform2.std(1), label='Uniform')
+mul1.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian2.mean(1),
+            yerr=rmse_gaussian2.std(1), color='r', label='Gaussian')
+mul1.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
+mul1.axis([0, n_nonzero_coefs+1, 0, 90])
+mul1.set_xticks(range(0, n_nonzero_coefs+2, 5))
+mul1.set_xlabel('k')
+mul1.legend(loc='upper right')
+mul2 = fig.add_subplot(1,3,3)
+mul2.set_title(r'Random multivariate (n=5) dictionary')
+mul2.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform3.mean(1),
+            yerr=rmse_uniform3.std(1), label='Uniform')
+mul2.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian3.mean(1),
+            yerr=rmse_gaussian3.std(1), color='r', label='Gaussian')
+mul2.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
+mul2.axis([0, n_nonzero_coefs+1, 0, 90])
+mul2.set_xticks(range(0, n_nonzero_coefs+2, 5))
+mul2.legend(loc='upper right')
 plt.savefig('sparse_decomposition_multivariate.png')
 
-
-# test uniform vs gaussian, for univariate, multivariate and kernelized version
-# function avec Gaussian, n_dims return 2 rmse_uniform, rmse_gaussian
-
-
-# Gaussian case
-# gaussian_dict, X, code = _generate_testbed(kernel_init_len=kernel_init_len,
-#                                              n_nonzero_coefs=n_nonzero_coefs,
-#                                              n_kernels=n_kernels,
-#                                              n_samples=n_samples,
-#                                              n_features=n_features,
-#                                              n_dims=n_dims,
-#                                              rng=rng_global,
-#                                              Gaussian=True)
-# rmse_gaussian = zeros(shape=(n_nonzero_coefs, n_samples))
-# for k in range(n_nonzero_coefs):
-#     for idx, s in enumerate(X):
-#         r, _ = multivariate_sparse_encode(array(s, ndmin=3), gaussian_dict,
-#                                       n_nonzero_coefs=k+1,
-#                                       n_jobs=n_jobs,
-#                                       verbose=1)
-#         rmse_gaussian[k, idx] = norm(r[0], 'fro')/norm(s, 'fro')*100
-
-# # Uniform case
-# uniform_dict, X, code = _generate_testbed(kernel_init_len=kernel_init_len,
-#                                           n_nonzero_coefs=n_nonzero_coefs,
-#                                           n_kernels=n_kernels,
-#                                           n_samples=n_samples,
-#                                           n_features=n_features,
-#                                           n_dims=n_dims,
-#                                           rng=rng_global,
-#                                           Gaussian=False)
-# rmse_uniform = zeros(shape=(n_nonzero_coefs, n_samples))
-# for k in range(n_nonzero_coefs):
-#     for idx, s in enumerate(X):
-#         r, _ = multivariate_sparse_encode(array(s, ndmin=3), uniform_dict,
-#                                       n_nonzero_coefs=k+1,
-#                                       n_jobs=n_jobs,
-#                                       verbose=1)
-#         rmse_uniform[k, idx] = norm(r[0], 'fro')/norm(s, 'fro')*100
-
-# fig = plt.figure(figsize=(10,8))
-# plt.title(r'Initialization of the generating dictionary')
-# km = fig.add_subplot(1,1,1)
-# km.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform.mean(1),
-#             yerr=rmse_uniform.std(1), label='Uniform')
-# km.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian.mean(1),
-#             yerr=rmse_gaussian.std(1), color='r', label='Gaussian')
-# km.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
-# km.axis([0, n_nonzero_coefs+1, 0, 90])
-# km.set_xticks(range(0, n_nonzero_coefs+2, 5))
-# km.set_xlabel('k')
-# km.set_ylabel('rRMSE (%)')
-# km.legend(loc='upper right')
-# plt.savefig('omp-rmse-UniformGaussian.png')
         
