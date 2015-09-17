@@ -152,6 +152,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
         correlation_score = np.zeros((n_kernels,
                                       max(n_features, k_max_len) -
                                       min(n_features, k_min_len) + 1))
+        # TODO: compute correlation only if kernel has not been selected
         for i in range(n_kernels):
             corr = 0
             for j in range(n_dims):
@@ -203,7 +204,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
         # Update the estimated signal and residual
         estimated_signal = np.zeros((n_features, n_dims))
         for i in range(atoms_in_estimate):
-            k_amp = int(decomposition[i, 0])
+            k_amp = decomposition[i, 0]
             k_off = int(decomposition[i, 1])
             k_kernel = int(decomposition[i, 2])
             k_len = dictionary[k_kernel].shape[0]
@@ -215,6 +216,9 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             residual_energy = (residual**2).sum(1).mean()
             print ('[M-OMP #', atoms_in_estimate-1, '] signal energy is',
                    signal_energy, 'and residual energy is', residual_energy)
+        if verbose >= 4:
+            print ('[M-OMP #', atoms_in_estimate-1, ']: partial decomposition',
+                   'is', decomposition[:atoms_in_estimate,:])
         
     # End big loop
     decomposition = decomposition[0:atoms_in_estimate, :]
@@ -765,6 +769,8 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         k_len = kernel_init_len
         max_offset = n_features-k_len
         
+        if verbose >= 2:
+            print ('[MDL] Initializing dictionary from samples')
         offset = random_state.random_integers(0, max_offset, n_kernels)
         ind_kernels = random_state.permutation(n_samples)[:n_kernels]
         dictionary = [X[p[0], p[1]:p[1]+k_len, :] for p in zip(ind_kernels, offset)]
@@ -935,6 +941,8 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
         k_len = kernel_init_len
         max_offset = n_features-k_len
         
+        if verbose >= 2:
+            print ('[MDL] Initializing dictionary from samples')
         offset = random_state.random_integers(0, max_offset, n_kernels)
         ind_kernels = random_state.permutation(n_samples)[:n_kernels]
         dictionary = [X[p[0], p[1]:p[1]+k_len, :] for p in zip(ind_kernels, offset)]
