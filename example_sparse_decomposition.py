@@ -113,37 +113,38 @@ rmse_uniform3 = decomposition_random_dictionary(Gaussian=False, rng=rng_global,
 
 fig = plt.figure(figsize=(15,5))
 uni = fig.add_subplot(1,3,1)
-uni.set_title(r'Random univariate (n=1) dictionary')
+uni.set_title(r'$n$=1')
 uni.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform1.mean(1),
             yerr=rmse_uniform1.std(1), label='Uniform')
 uni.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian1.mean(1),
             yerr=rmse_gaussian1.std(1), color='r', label='Gaussian')
 uni.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
-uni.axis([0, n_nonzero_coefs+1, 0, 90])
+uni.axis([0, n_nonzero_coefs+1, 0, 100])
 uni.set_xticks(range(0, n_nonzero_coefs+2, 5))
 uni.set_ylabel('rRMSE (%)')
 uni.legend(loc='upper right')
 mul1 = fig.add_subplot(1,3,2)
-mul1.set_title(r'Random multivariate (n=3) dictionary')
+mul1.set_title(r'Random multivariate dictionary, $n$=3')
 mul1.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform2.mean(1),
             yerr=rmse_uniform2.std(1), label='Uniform')
 mul1.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian2.mean(1),
             yerr=rmse_gaussian2.std(1), color='r', label='Gaussian')
 mul1.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
-mul1.axis([0, n_nonzero_coefs+1, 0, 90])
+mul1.axis([0, n_nonzero_coefs+1, 0, 100])
 mul1.set_xticks(range(0, n_nonzero_coefs+2, 5))
 mul1.set_xlabel('k')
 mul1.legend(loc='upper right')
 mul2 = fig.add_subplot(1,3,3)
-mul2.set_title(r'Random multivariate (n=5) dictionary')
+mul2.set_title(r'$n$=5')
 mul2.errorbar(range(1, n_nonzero_coefs+1), rmse_uniform3.mean(1),
             yerr=rmse_uniform3.std(1), label='Uniform')
 mul2.errorbar(range(1, n_nonzero_coefs+1), rmse_gaussian3.mean(1),
             yerr=rmse_gaussian3.std(1), color='r', label='Gaussian')
 mul2.plot(range(n_nonzero_coefs+2), np.zeros(n_nonzero_coefs+2), 'k')
-mul2.axis([0, n_nonzero_coefs+1, 0, 90])
+mul2.axis([0, n_nonzero_coefs+1, 0, 100])
 mul2.set_xticks(range(0, n_nonzero_coefs+2, 5))
 mul2.legend(loc='upper right')
+plt.tight_layout(.5)
 plt.savefig('sparse_decomposition_multivariate.png')
 
         

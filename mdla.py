@@ -993,10 +993,14 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
                 if callback is not None:
                     callback(locals())
 
-            if ii == 1 and verbose == 1:
-                print ('Expecting this learning experiment to finish in',
+            if ii == (iter_offset+1)*int(n_batches) and verbose == 1:
+                print ('Expecting this learning iterations to finish in',
                        (time()-t0)*(n_iter-iter_offset)/60., 'm')
-
+            # if verbose == 1:
+                print ('Time from begining is', time()-t0, 's, with n_iter=',
+                        n_iter, ', iter_offset=', iter_offset,
+                        ', i.e.', n_iter-iter_offset, 'iterations to go. ii=',
+                        ii)
 
             # Cost function
             current_cost = 0.0
