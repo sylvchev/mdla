@@ -8,9 +8,6 @@ from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint
 
-# TODO: Add SNR, repeat experiments to make stats, make a fast and a 
-#       long version, 
-
 def plot_univariate(objective_error, detection_rate, wasserstein,
                     n_iter, figname):
     fig = plt.figure(figsize=(15,5))

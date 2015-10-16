@@ -1,4 +1,4 @@
-"""Dictionary recovering experiment for univariate random dataset"""
+"""Dictionary recovering experiment for multivariate random dataset"""
 import numpy as np
 import matplotlib.pyplot as plt
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
@@ -7,9 +7,6 @@ from dict_metrics import hausdorff, emd, detectionRate
 from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint
-
-# TODO: Add SNR, repeat experiments to make stats, make a fast and a 
-#       long version, 
 
 def plot_multivariate(objective_error, detection_rate, wasserstein,
                     n_iter, figname):
