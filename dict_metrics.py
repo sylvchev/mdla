@@ -358,7 +358,7 @@ def betaDist(dictRef, dictLearn):
     dr = 0
     D1 = np.array(dictRef)
     M  = D1.shape[0]
-    N  = D1.shape[2]
+    N  = D1.shape[1]
     D1 = D1.reshape((M, N))
     D2 = np.array(dictLearn)
     D2 = D2.reshape((M, N))
