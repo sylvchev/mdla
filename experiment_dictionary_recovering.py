@@ -56,7 +56,7 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
 def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     fig = plt.figure(figsize=(18,10))
     
-    # plotting data from detection rate
+    # plotting data from detection rate SNR 30
     detection = fig.add_subplot(3,4,1)
     det99 = detection.boxplot(dr99[0,:,:])
     plt.setp(det99['medians'], color='green')
@@ -126,7 +126,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     metwass.set_title(r'SNR 30')
     
     # plotting data from Beta SNR 30
-    metbeta = fig.add_subplot(3,2,2)
+    metbeta = fig.add_subplot(3, 4, 4)
     betad = metbeta.boxplot(1-bd[0,:,:]/100.) 
     plt.setp(betad['medians'], color='black')
     plt.setp(betad['caps'], color='black')
@@ -139,7 +139,92 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     metbeta.set_xticks(np.arange(0,n+1,10))
     metbeta.legend(loc='lower right')
     metbeta.set_title(r'SNR 30')
-       
+
+    # plotting data from detection rate for SNR 20
+    detection = fig.add_subplot(3, 4, 5)
+    det99 = detection.boxplot(dr99[1,:,:])
+    plt.setp(det99['medians'], color='green')
+    plt.setp(det99['caps'], color='green')
+    plt.setp(det99['boxes'], color='green')
+    plt.setp(det99['fliers'], color='green')
+    plt.setp(det99['whiskers'], color='green')
+    medianlt99 = [median.get_ydata()[0] for n,median in enumerate(det99['medians'])]
+    axlt99 = detection.plot(np.arange(1,n+2), medianlt99, linewidth=1, color='green', label=r'$c_\operatorname{99}$')
+    det97 = detection.boxplot(dr97[1,:,:])
+    plt.setp(det97['medians'], color='mangenta')
+    plt.setp(det97['caps'], color='mangenta')
+    plt.setp(det97['boxes'], color='mangenta')
+    plt.setp(det97['fliers'], color='mangenta')
+    plt.setp(det97['whiskers'], color='mangenta')
+    medianlt97 = [median.get_ydata()[0] for n,median in enumerate(det97['medians'])]
+    axlt97 = detection.plot(np.arange(1,n+2), medianlt97, linewidth=1, color='magenta', label=r'$c_\operatorname{97}$')
+    detection.axis([0, n, 0, 100])
+    detection.set_xticks(np.arange(0,n+1,10))
+    detection.set_title(r'SNR 20')
+    detection.legend(loc='lower right')
+    
+    # plotting data from hausdorff metric SNR 20
+    methaus = fig.add_subplot(3, 4, 6)
+    hausch = methaus.boxplot(1-hc[1,:,:]/100.) 
+    plt.setp(hausch['medians'], color='cyan')
+    plt.setp(hausch['caps'], color='cyan')
+    plt.setp(hausch['boxes'], color='cyan')
+    plt.setp(hausch['fliers'], color='cyan')
+    plt.setp(hausch['whiskers'], color='cyan')
+    medianhc = [median.get_ydata()[0] for n,median in enumerate(hausch['medians'])]
+    axhc = methaus.plot(np.arange(1,n+2), medianhc, linewidth=1, label=r'$1-d_H^c$', color='cyan')
+    hausfs = methaus.boxplot(1-hfs[1,:,:]/100.) 
+    plt.setp(hausfs['medians'], color='yellow')
+    plt.setp(hausfs['caps'], color='yellow')
+    plt.setp(hausfs['boxes'], color='yellow')
+    plt.setp(hausfs['fliers'], color='yellow')
+    plt.setp(hausfs['whiskers'], color='yellow')
+    medianhfs = [median.get_ydata()[0] for n,median in enumerate(hausfs['medians'])]
+    axhfs = methaus.plot(np.arange(1,n+2), medianhfs, linewidth=1, label=r'$1-d_H^{fs}$', color='yellow')
+    methaus.axis([0, n, 0, 1])
+    methaus.set_xticks(np.arange(0,n+1,10))
+    methaus.legend(loc='lower right')
+    methaus.set_title(r'SNR 20')
+
+    # plotting data from wasserstein metric SNR 20
+    metwass = fig.add_subplot(3, 4, 7)
+    wassch = metwass.boxplot(1-wc[1,:,:]/100.) 
+    plt.setp(wassch['medians'], color='red')
+    plt.setp(wassch['caps'], color='red')
+    plt.setp(wassch['boxes'], color='red')
+    plt.setp(wassch['fliers'], color='red')
+    plt.setp(wassch['whiskers'], color='red')
+    medianwc = [median.get_ydata()[0] for n,median in enumerate(wassch['medians'])]
+    axwc = metwass.plot(np.arange(1,n+2), medianwc, linewidth=1, label=r'$1-d_W^c$', color='red')
+    wassfs = metwass.boxplot(1-hfs[1,:,:]/100.) 
+    plt.setp(wassfs['medians'], color='blue')
+    plt.setp(wassfs['caps'], color='blue')
+    plt.setp(wassfs['boxes'], color='blue')
+    plt.setp(wassfs['fliers'], color='blue')
+    plt.setp(wassfs['whiskers'], color='blue')
+    medianwfs = [median.get_ydata()[0] for n,median in enumerate(wassfs['medians'])]
+    axwfs = metwass.plot(np.arange(1,n+2), medianwfs, linewidth=1, label=r'$1-d_W^{fs}$', color='blue')
+    metwass.axis([0, n, 0, 1])
+    metwass.set_xticks(np.arange(0,n+1,10))
+    metwass.legend(loc='lower right')
+    metwass.set_title(r'SNR 20')
+    
+    # plotting data from Beta SNR 20
+    metbeta = fig.add_subplot(3, 4, 8)
+    betad = metbeta.boxplot(1-bd[1,:,:]/100.) 
+    plt.setp(betad['medians'], color='black')
+    plt.setp(betad['caps'], color='black')
+    plt.setp(betad['boxes'], color='black')
+    plt.setp(betad['fliers'], color='black')
+    plt.setp(betad['whiskers'], color='black')
+    medianbd = [median.get_ydata()[0] for n,median in enumerate(betad['medians'])]
+    axbd = metbeta.plot(np.arange(1,n+2), medianbd, linewidth=1, label=r'$1-d_\beta$', color='black')
+    metbeta.axis([0, n, 0, 1])
+    metbeta.set_xticks(np.arange(0,n+1,10))
+    metbeta.legend(loc='lower right')
+    metbeta.set_title(r'SNR 20')
+
+           
 
 def callback_recovery(loc):
     d = loc['dict_obj']
