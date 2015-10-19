@@ -181,7 +181,7 @@ else:
     dr99 = zeros((n_snr, n_experiments, n_iter))
     dr97 = zeros((n_snr, n_experiments, n_iter))
 
-    for i, s in itemize(snr):
+    for i, s in enumerate(snr):
         for e in range(n_experiments):
             g, X, code = _generate_testbed(kernel_init_len,
                 n_nonzero_coefs, n_kernels, n_samples, n_features,
