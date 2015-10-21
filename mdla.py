@@ -999,13 +999,13 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
                 if callback is not None:
                     callback(locals())
 
-            if ii == (iter_offset+1)*int(n_batches) and verbose == 1:
+            if ii == (iter_offset+1)*int(n_batches) and verbose >= 1:
                 print ('Expecting this learning iterations to finish in',
                        (time()-t0)*n_iter/60., 'm')
-            if verbose == 1:
-                print ('Time from begining is', time()-t0, 's, with n_iter=',
-                        n_iter, ', iter_offset=', iter_offset,
-                        ', i.e.', n_iter, 'iterations to go.')
+                # if verbose == 1:
+                # print ('Time from begining is',time()-t0,'s, with n_iter=',
+                #         n_iter, ', iter_offset=', iter_offset,
+                #         ', i.e.', n_iter, 'iterations to go.')
         except KeyboardInterrupt:
             break
     
