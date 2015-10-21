@@ -54,6 +54,10 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
     return dico, signals, decomposition
 
 def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
+    # TODO:
+    # - laisser uniquement les ticks sur les axes exterieurs.
+    # - changer le ticks y car pas bons (1-3 au lieu de 1-25)
+    
     snr = ['30', '20', '10']
     fig = plt.figure(figsize=(18,10))
     for i, s in enumerate(snr):
@@ -88,7 +92,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     
         # plotting data from hausdorff metric
         methaus = fig.add_subplot(3, 4, i*4+2)
-        hausch = methaus.boxplot(1-hc[i,:,:]/100.) 
+        hausch = methaus.boxplot(1-hc[i,:,:]) 
         plt.setp(hausch['medians'], color='cyan')
         plt.setp(hausch['caps'], color='cyan')
         plt.setp(hausch['boxes'], color='cyan')
@@ -98,7 +102,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
                     for n,median in enumerate(hausch['medians'])]
         axhc = methaus.plot(np.arange(1,n+2), medianhc, linewidth=1,
                             label=r'$1-d_H^c$', color='cyan')
-        hausfs = methaus.boxplot(1-hfs[i,:,:]/100.) 
+        hausfs = methaus.boxplot(1-hfs[i,:,:]) 
         plt.setp(hausfs['medians'], color='yellow')
         plt.setp(hausfs['caps'], color='yellow')
         plt.setp(hausfs['boxes'], color='yellow')
@@ -115,7 +119,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
 
         # plotting data from wasserstein metric
         metwass = fig.add_subplot(3, 4, i*4+3)
-        wassch = metwass.boxplot(1-wc[i,:,:]/100.) 
+        wassch = metwass.boxplot(1-wc[i,:,:]) 
         plt.setp(wassch['medians'], color='red')
         plt.setp(wassch['caps'], color='red')
         plt.setp(wassch['boxes'], color='red')
@@ -125,7 +129,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
                     for n,median in enumerate(wassch['medians'])]
         axwc = metwass.plot(np.arange(1,n+2), medianwc, linewidth=1,
                             label=r'$1-d_W^c$', color='red')
-        wassfs = metwass.boxplot(1-hfs[i,:,:]/100.) 
+        wassfs = metwass.boxplot(1-wfs[i,:,:]) 
         plt.setp(wassfs['medians'], color='blue')
         plt.setp(wassfs['caps'], color='blue')
         plt.setp(wassfs['boxes'], color='blue')
@@ -142,7 +146,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     
         # plotting data from Beta
         metbeta = fig.add_subplot(3, 4, i*4+4)
-        betad = metbeta.boxplot(1-bd[i,:,:]/100.) 
+        betad = metbeta.boxplot(1-bd[i,:,:]) 
         plt.setp(betad['medians'], color='black')
         plt.setp(betad['caps'], color='black')
         plt.setp(betad['boxes'], color='black')
@@ -163,13 +167,13 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
 def callback_recovery(loc):
     d = loc['dict_obj']
     d.wc.append(emd(loc['dictionary'], d.generating_dict, 
-                    'chordal', scale=False))
+                    'chordal', scale=True))
     d.wfs.append(emd(loc['dictionary'], d.generating_dict, 
-                     'fubinistudy', scale=False))
+                     'fubinistudy', scale=True))
     d.hc.append(hausdorff(loc['dictionary'], d.generating_dict, 
-                          'chordal', scale=False))
+                          'chordal', scale=True))
     d.hfs.append(hausdorff(loc['dictionary'], d.generating_dict, 
-                           'fubinistudy', scale=False))
+                           'fubinistudy', scale=True))
     d.bd.append(betaDist(d.generating_dict, loc['dictionary']))
     d.dr99.append(detectionRate(loc['dictionary'],
                                 d.generating_dict, 0.99))
