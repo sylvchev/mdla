@@ -54,10 +54,6 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
     return dico, signals, decomposition
 
 def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
-    # TODO:
-    # - laisser uniquement les ticks sur les axes exterieurs.
-    # - changer le ticks y car pas bons (1-3 au lieu de 1-25)
-    
     snr = ['30', '20', '10']
     fig = plt.figure(figsize=(18,10))
     for i, s in enumerate(snr):
@@ -88,7 +84,6 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         detection.axis([0, n_iter, 0, 1])
         detection.set_xticks(arange(0, n_iter+1, 10))
         detection.set_xticklabels([])
-        detection.set_title(r'SNR '+s)
         detection.legend(loc='lower right')
     
         # plotting data from hausdorff metric
@@ -118,7 +113,6 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         methaus.set_xticklabels([])
         methaus.set_yticklabels([])
         methaus.legend(loc='lower right')
-        methaus.set_title(r'SNR '+s)
 
         # plotting data from wasserstein metric
         metwass = fig.add_subplot(3, 4, i*4+3)
@@ -147,7 +141,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         metwass.set_xticklabels([])
         metwass.set_yticklabels([])
         metwass.legend(loc='lower right')
-        metwass.set_title(r'SNR '+s)
+        metwass.set_title(' ')
     
         # plotting data from Beta
         metbeta = fig.add_subplot(3, 4, i*4+4)
@@ -166,7 +160,11 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         metbeta.set_xticklabels([])
         metbeta.set_yticklabels([])
         metbeta.legend(loc='lower right')
-        metbeta.set_title(r'SNR '+s)
+
+        metbeta.annotate('SNR '+s, xy=(.51, 1.-i*1./3.+i*0.01-0.001),
+                xycoords='figure fraction',
+                horizontalalignment='center', verticalalignment='top',
+                fontsize='large')
 
     detection.set_xticks(arange(0, n_iter+1, 10))
     detection.set_xticklabels(arange(0, n_iter+1, 10))
@@ -176,7 +174,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     metwass.set_xticklabels(arange(0, n_iter+1, 10))
     metbeta.set_xticks(arange(0, n_iter+1, 10))
     metbeta.set_xticklabels(arange(0, n_iter+1, 10))
-    plt.tight_layout(.5)
+    plt.tight_layout(1.2)
     plt.savefig(figname+".png")
 
 def callback_recovery(loc):
