@@ -6,7 +6,7 @@ from mdla import multivariate_sparse_encode
 from dict_metrics import hausdorff, emd, detectionRate
 from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
-from numpy.random import rand, randn, permutation, randint
+from numpy.random import rand, randn, permutation, randint, RandomState
 
 def plot_multivariate(objective_error, detection_rate, wasserstein,
                     n_iter, figname):
@@ -86,7 +86,7 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
 
     return dico, signals, decomposition
 
-rng_global = np.random.RandomState(1)
+rng_global = RandomState(1)
 n_samples, n_dims = 1500, 3
 n_features = kernel_init_len = 20
 n_nonzero_coefs = 3
