@@ -369,7 +369,9 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     decompositions = list()
     slices = list(gen_even_slices(n_samples, n_jobs))
 
-    # print ('[Debug-MOMP] starting parallel %d jobs for %d samples' % (n_jobs, n_samples))
+    if vebose >= 3:
+        print ('[Debug-MOMP] starting parallel %d jobs for %d samples'
+               % (n_jobs, n_samples))
         
     # res_views, code_views
     views = Parallel(n_jobs=n_jobs)(
