@@ -369,7 +369,7 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     decompositions = list()
     slices = list(gen_even_slices(n_samples, n_jobs))
 
-    if vebose >= 3:
+    if verbose >= 3:
         print ('[Debug-MOMP] starting parallel %d jobs for %d samples'
                % (n_jobs, n_samples))
         
