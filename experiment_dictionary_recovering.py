@@ -200,7 +200,7 @@ n_nonzero_coefs, learning_rate = 3, 1.5
 n_experiments, n_iter = 15, 25
 snr = [30, 20, 10]
 n_snr = len(snr)
-n_jobs, batch_size = -1, 10
+n_jobs, batch_size = -1, 60
 
 if exists("expe_reco.pck"):
     with open("expe_reco.pck", "r") as f:
