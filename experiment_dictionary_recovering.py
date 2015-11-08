@@ -11,9 +11,6 @@ from numpy.random import rand, randn, permutation, randint, RandomState
 import pickle
 from os.path import exists
 
-# TODO: Add SNR, repeat experiments to make stats, make a fast and a 
-#       long version, 
-
 def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
                       n_samples=10, n_features=5, n_dims=3, snr=1000):
     """Generate a dataset from a random dictionary
