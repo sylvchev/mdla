@@ -184,7 +184,7 @@ if exists(backup_fname):
     with open(backup_fname, "r") as f:
         o = pickle.load(f)
     wc, wfs, hc, hfs = o['wc'], o['wfs'], o['hc'], o['hfs']
-    bd, dr99, dr97 = o['bd'], o['dr99'], o['dr97']
+    dr99, dr97 = o['dr99'], o['dr97']
     plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, "multivariate_recov")
 else:
     wc = zeros((n_snr, n_experiments, n_iter))
@@ -214,7 +214,7 @@ else:
             hc[i, e, :] = array(d.hc); hfs[i, e, :] = array(d.hfs)
             dr99[i, e, :] = array(d.dr99); dr97[i, e, :] = array(d.dr97)
     with open(backup_fname, "w") as f:
-        o = {'wc':wc, 'wfs':wfs, 'hc':hc, 'hfs':hfs, 'bd':bd, 'dr99':dr99, 'dr97':dr97}
+        o = {'wc':wc, 'wfs':wfs, 'hc':hc, 'hfs':hfs, 'dr99':dr99, 'dr97':dr97}
         pickle.dump(o, f)
     plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, "multivariate_recov")
         
