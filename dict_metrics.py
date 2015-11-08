@@ -12,6 +12,8 @@ atoms.
 # License: GPL v3 
 
 # TODO: add docstring to criteria fonction
+#       verify Fubini-Study scale parameter
+#       verify beta dist behavior, seems like 1-bd
 
 import numpy as np
 import numpy.linalg as la
