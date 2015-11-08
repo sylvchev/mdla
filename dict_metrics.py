@@ -142,7 +142,7 @@ def hausdorff(D1, D2, gdist, scale=False):
     dictionary atoms, using a ground distance.
     Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
     or "frobeniusBased".
-    The scale parameter changes the return value to be between 0 and 100.
+    The scale parameter changes the return value to be between 0 and 1.
     '''
     if   gdist == "chordal":
         g = chordal
@@ -215,7 +215,7 @@ def emd(D1, D2, gdist, scale=False):
     here dictionary atoms, using a ground distance.
     Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
     or "frobeniusBased".
-    The scale parameter changes the return value to be between 0 and 100.
+    The scale parameter changes the return value to be between 0 and 1.
     '''
     if gdist == "chordal":
         g = chordal
