@@ -12,6 +12,8 @@ atoms.
 # License: GPL v3 
 
 # TODO: add docstring to criteria fonction
+#       verify Fubini-Study scale parameter
+#       verify beta dist behavior, seems like 1-bd
 
 import numpy as np
 import numpy.linalg as la
@@ -142,7 +144,7 @@ def hausdorff(D1, D2, gdist, scale=False):
     dictionary atoms, using a ground distance.
     Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
     or "frobeniusBased".
-    The scale parameter changes the return value to be between 0 and 100.
+    The scale parameter changes the return value to be between 0 and 1.
     '''
     if   gdist == "chordal":
         g = chordal
@@ -197,17 +199,17 @@ def hausdorff(D1, D2, gdist, scale=False):
     if not scale: return d
     else:
         if gdist == "chordal" or gdist == "chordalPA":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])*100.
+            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
         elif gdist == "fubinistudy":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])*100.
+            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
         elif gdist == "binetcauchy":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])*100.
+            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
         elif gdist == "geodesic":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])*100.
+            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
         elif gdist == "frobeniusBased":
-            return (sqrt(2.)-d)/sqrt(2.)*100.
+            return (sqrt(2.)-d)/sqrt(2.)
         else:
-            return d*100.
+            return d
         
 def emd(D1, D2, gdist, scale=False):
     '''
@@ -215,7 +217,7 @@ def emd(D1, D2, gdist, scale=False):
     here dictionary atoms, using a ground distance.
     Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
     or "frobeniusBased".
-    The scale parameter changes the return value to be between 0 and 100.
+    The scale parameter changes the return value to be between 0 and 1.
     '''
     if gdist == "chordal":
         g = chordal
@@ -290,17 +292,17 @@ def emd(D1, D2, gdist, scale=False):
     if not scale: return d
     else:
         if gdist == "chordal" or gdist == "chordalPA":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])*100.
+            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
         elif gdist == "fubinistudy":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])*100.
+            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
         elif gdist == "binetcauchy":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])*100.
+            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
         elif gdist == "geodesic":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])*100.
+            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
         elif gdist == "frobeniusBased":
-            return (sqrt(2.)-d)/sqrt(2.)*100.
+            return (sqrt(2.)-d)/sqrt(2.)
         else:
-            return d*100.
+            return d
 
 def computeCorrelation(s, D):
     corr = np.zeros((len(D), s.shape[1]))

@@ -1,4 +1,4 @@
-"""Dictionary recovering experiment for univariate random dataset"""
+"""Dictionary recovering experiment for multivariate random dataset"""
 from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,12 +50,12 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
 
     return dico, signals, decomposition
 
-def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
+def plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, figname):
     snr = ['30', '20', '10']
     fig = plt.figure(figsize=(18,10))
     for i, s in enumerate(snr):
         # plotting data from detection rate
-        detection = fig.add_subplot(3, 4, i*4+1)
+        detection = fig.add_subplot(3, 3, i*3+1)
         det99 = detection.boxplot(dr99[i,:,:]/100.)
         plt.setp(det99['medians'], color='green')
         plt.setp(det99['caps'], color='green')
@@ -84,7 +84,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         detection.legend(loc='lower right')
     
         # plotting data from hausdorff metric
-        methaus = fig.add_subplot(3, 4, i*4+2)
+        methaus = fig.add_subplot(3, 3, i*3+2)
         hausch = methaus.boxplot(1-hc[i,:,:]) 
         plt.setp(hausch['medians'], color='cyan')
         plt.setp(hausch['caps'], color='cyan')
@@ -112,7 +112,7 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         methaus.legend(loc='lower right')
 
         # plotting data from wasserstein metric
-        metwass = fig.add_subplot(3, 4, i*4+3)
+        metwass = fig.add_subplot(3, 3, i*3+3)
         wassch = metwass.boxplot(1-wc[i,:,:]) 
         plt.setp(wassch['medians'], color='red')
         plt.setp(wassch['caps'], color='red')
@@ -139,26 +139,8 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
         metwass.set_yticklabels([])
         metwass.legend(loc='lower right')
         metwass.set_title(' ')
-    
-        # plotting data from Beta
-        metbeta = fig.add_subplot(3, 4, i*4+4)
-        betad = metbeta.boxplot(1-bd[i,:,:]) 
-        plt.setp(betad['medians'], color='black')
-        plt.setp(betad['caps'], color='black')
-        plt.setp(betad['boxes'], color='black')
-        plt.setp(betad['fliers'], color='black')
-        plt.setp(betad['whiskers'], color='black')
-        medianbd = [median.get_ydata()[0]
-                    for n, median in enumerate(betad['medians'])]
-        axbd = metbeta.plot(arange(1, n_iter+1), medianbd, linewidth=1,
-                            label=r'$1-d_\beta$', color='black')
-        metbeta.axis([0, n_iter, 0, 1])
-        metbeta.set_xticks(arange(0, n_iter+1, 10))
-        metbeta.set_xticklabels([])
-        metbeta.set_yticklabels([])
-        metbeta.legend(loc='lower right')
 
-        metbeta.annotate('SNR '+s, xy=(.51, 1.-i*1./3.+i*0.01-0.001),
+        metwass.annotate('SNR '+s, xy=(.51, 1.-i*1./3.+i*0.01-0.001),
                 xycoords='figure fraction',
                 horizontalalignment='center', verticalalignment='top',
                 fontsize='large')
@@ -169,8 +151,6 @@ def plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, figname):
     methaus.set_xticklabels(arange(0, n_iter+1, 10))
     metwass.set_xticks(arange(0, n_iter+1, 10))
     metwass.set_xticklabels(arange(0, n_iter+1, 10))
-    metbeta.set_xticks(arange(0, n_iter+1, 10))
-    metbeta.set_xticklabels(arange(0, n_iter+1, 10))
     plt.tight_layout(1.2)
     plt.savefig(figname+".png")
 
@@ -184,14 +164,13 @@ def callback_recovery(loc):
                           'chordal', scale=True))
     d.hfs.append(hausdorff(loc['dictionary'], d.generating_dict, 
                            'fubinistudy', scale=True))
-    d.bd.append(betaDist(d.generating_dict, loc['dictionary']))
     d.dr99.append(detectionRate(loc['dictionary'],
                                 d.generating_dict, 0.99))
     d.dr97.append(detectionRate(loc['dictionary'],
                                 d.generating_dict, 0.97))
 
 rng_global = RandomState(1)
-n_samples, n_dims, n_kernels = 1500, 1, 50
+n_samples, n_dims, n_kernels = 1500, 5, 50
 n_features = kernel_init_len = 20
 n_nonzero_coefs, learning_rate = 3, 1.5
 n_experiments, n_iter = 15, 25
@@ -199,18 +178,19 @@ snr = [30, 20, 10]
 n_snr = len(snr)
 n_jobs, batch_size = -1, 60
 
-if exists("expe_reco.pck"):
-    with open("expe_reco.pck", "r") as f:
+backup_fname = "expe_multi_reco.pck"
+
+if exists(backup_fname):
+    with open(backup_fname, "r") as f:
         o = pickle.load(f)
     wc, wfs, hc, hfs = o['wc'], o['wfs'], o['hc'], o['hfs']
-    bd, dr99, dr97 = o['bd'], o['dr99'], o['dr97']
-    plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, "univariate_recov")
+    dr99, dr97 = o['dr99'], o['dr97']
+    plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, "multivariate_recov")
 else:
     wc = zeros((n_snr, n_experiments, n_iter))
     wfs = zeros((n_snr, n_experiments, n_iter))
     hc = zeros((n_snr, n_experiments, n_iter))
     hfs = zeros((n_snr, n_experiments, n_iter))
-    bd = zeros((n_snr, n_experiments, n_iter))
     dr99 = zeros((n_snr, n_experiments, n_iter))
     dr97 = zeros((n_snr, n_experiments, n_iter))
 
@@ -227,15 +207,14 @@ else:
                 random_state=rng_global)
             d.generating_dict = list(g)
             d.wc, d.wfs, d.hc, d.hfs = list(), list(), list(), list()
-            d.bd, d.dr99, d.dr97 = list(), list(), list()
+            d.dr99, d.dr97 = list(), list()
             print ('\nExperiment', e+1, 'on', n_experiments)
             d = d.fit(X)
             wc[i, e, :] = array(d.wc); wfs[i, e, :] = array(d.wfs)
             hc[i, e, :] = array(d.hc); hfs[i, e, :] = array(d.hfs)
             dr99[i, e, :] = array(d.dr99); dr97[i, e, :] = array(d.dr97)
-            bd[i, e,:] = array(d.bd)
-    with open("expe_reco.pck", "w") as f:
-        o = {'wc':wc, 'wfs':wfs, 'hc':hc, 'hfs':hfs, 'bd':bd, 'dr99':dr99, 'dr97':dr97}
+    with open(backup_fname, "w") as f:
+        o = {'wc':wc, 'wfs':wfs, 'hc':hc, 'hfs':hfs, 'dr99':dr99, 'dr97':dr97}
         pickle.dump(o, f)
-    plot_recov(wc, wfs, hc, hfs, bd, dr99, dr97, n_iter, "univariate_recov")
+    plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, "multivariate_recov")
         
