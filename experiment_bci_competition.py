@@ -173,8 +173,8 @@ def saveKernelPlot(kernels, n_kernels, col = 5, row = -1, order=None, figname = 
 
 
 X = read_BCI_signals()
-X_half1 = [x[0::2,:] for x in X]
-X_half2 = [x[1::2,:] for x in X]
+X_half1 = array([x[0::2,:] for x in X])
+X_half2 = array([x[1::2,:] for x in X])
 
 rng_global = RandomState(1)
 n_samples = len(X_half1)
