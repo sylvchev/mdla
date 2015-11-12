@@ -358,6 +358,9 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     if n_nonzero_coefs is None:
         n_nonzero_coefs = max(n_features / 10, 1)
     
+    if n_jobs == -1:
+        n_jobs = cpu_count()
+        
     if n_jobs == 1:
         r, d = _multivariate_sparse_encode(X, kernels,
                                            n_nonzero_coefs,
