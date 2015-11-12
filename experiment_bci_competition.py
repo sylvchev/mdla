@@ -263,4 +263,10 @@ with open('EEG-savedico-half2'+figname+'.pkl', 'w+') as f:
     o = {'kernels':d2.kernels_, 'error':d2.error_, 'kernel_init_len':d2.kernel_init_len, 'learning_rate':d2.learning_rate, 'n_iter':d2.n_iter, 'n_jobs':d2.n_jobs, 'n_kernels':d2.n_kernels, 'n_nonzero_coefs':d2.n_nonzero_coefs}
     pickle.dump(o,f)
 
+print ("Computing distances")
+print ("Wasserstein chordal distance is", emd(d1.kernels_, d2.kernels_, 'chordal', scale=True))
+print ("Wasserstein Fubini-Study is", emd(d1.kernels_, d2.kernels_, 'fubinistudy', scale=True))
+
+# Wasserstein chordal distance is 0.636417242678
+# Wasserstein Fubini-Study is 0.679802451865
 
