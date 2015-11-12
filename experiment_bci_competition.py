@@ -8,7 +8,7 @@ from mdla import MiniBatchMultivariateDictLearning
 from dict_metrics import hausdorff, emd, detectionRate
 from numpy.linalg import norm
 from numpy import array, arange, zeros, zeros_like, min, max, int,real, exp, \
-pi, poly, nan_to_num
+pi, poly, nan_to_num, histogram, hstack
 from numpy.random import rand, randn, permutation, randint, RandomState
 from scipy.signal import filtfilt, butter, decimate
 from scipy.io import loadmat
@@ -204,22 +204,22 @@ d2 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 random_state=rng_global)
 d2 = d2.fit(X_half2)
 
-figure()
-plot (np.array(d1.error_))
-savefig('EEG-decomposition-error-half1'+figname+'.png')
+plt.figure()
+plt.plot (array(d1.error_))
+plt.savefig('EEG-decomposition-error-half1'+figname+'.png')
 
-figure()
-plot (np.array(d2.error_))
-savefig('EEG-decomposition-error-half2'+figname+'.png')
+plt.figure()
+plt.plot (array(d2.error_))
+plt.savefig('EEG-decomposition-error-half2'+figname+'.png')
 
 from mdla import multivariate_sparse_encode
 from collections import Counter
-
+n_jobs = 4
 r, code = multivariate_sparse_encode(X_half1, d1.kernels_,
                                      n_nonzero_coefs=n_nonzero_coefs,
                                      n_jobs=n_jobs, verbose=2)
 
-decomposition_weight = np.hstack([code[i][:,2] for i in range(len(code))])
+decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
 decomposition_weight.sort()
 weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
 order = weight.argsort()
@@ -228,18 +228,18 @@ saveKernelPlot(d1.kernels_, d1.n_kernels, order=order, label=weight, figname='EE
 correlation = Counter(decomposition_weight).items()
 correlation.sort(key=lambda x: x[1])
 labels, values = zip(*correlation)
-indexes = np.arange(len(correlation))
+indexes = arange(len(correlation))
 
-figure()
+plt.figure()
 width = 1
 plt.bar(indexes, values, width, linewidth=0)
-savefig('EEG-coeff_hist_sorted-half1'+figname+'.png')
+plt.savefig('EEG-coeff_hist_sorted-half1'+figname+'.png')
 
 r, code = multivariate_sparse_encode(X_half2, d2.kernels_,
                                      n_nonzero_coefs=n_nonzero_coefs,
                                      n_jobs=n_jobs, verbose=2)
 
-decomposition_weight = np.hstack([code[i][:,2] for i in range(len(code))])
+decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
 decomposition_weight.sort()
 weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
 order = weight.argsort()
@@ -248,12 +248,12 @@ saveKernelPlot(d2.kernels_, d2.n_kernels, order=order, label=weight, figname='EE
 correlation = Counter(decomposition_weight).items()
 correlation.sort(key=lambda x: x[1])
 labels, values = zip(*correlation)
-indexes = np.arange(len(correlation))
+indexes = arange(len(correlation))
 
-figure()
+plt.figure()
 width = 1
 plt.bar(indexes, values, width, linewidth=0)
-savefig('EEG-coeff_hist_sorted-half2'+figname+'.png')
+plt.savefig('EEG-coeff_hist_sorted-half2'+figname+'.png')
 
 with open('EEG-savedico-half1'+figname+'.pkl', 'w+') as f:
     o = {'kernels':d1.kernels_, 'error':d1.error_, 'kernel_init_len':d1.kernel_init_len, 'learning_rate':d1.learning_rate, 'n_iter':d1.n_iter, 'n_jobs':d1.n_jobs, 'n_kernels':d1.n_kernels, 'n_nonzero_coefs':d1.n_nonzero_coefs}
