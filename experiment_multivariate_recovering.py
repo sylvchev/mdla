@@ -1,7 +1,6 @@
 """Dictionary recovering experiment for multivariate random dataset"""
 from __future__ import print_function
 import numpy as np
-import matplotlib.pyplot as plt
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
 from mdla import multivariate_sparse_encode
 from dict_metrics import hausdorff, emd, detectionRate, betaDist
@@ -10,6 +9,14 @@ from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint, RandomState
 import pickle
 from os.path import exists
+
+import os
+display = os.environ.get('DISPLAY')
+if display is None:
+    # if launched from a screen
+    import matplotlib
+    matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
                       n_samples=10, n_features=5, n_dims=3, snr=1000):
