@@ -836,7 +836,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         if callback is not None:
             callback(locals())
     # reformating the error
-    errors = np.array(errors).reshape((max_iter, n_batches))
+    errors = np.array(errors).reshape((max_iter,))
     return code, dictionary, errors
 
 def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
