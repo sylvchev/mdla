@@ -58,7 +58,6 @@ def read_BCI_signals():
         with open(fn,'r') as f:
             o = pickle.load(f)
             signals = o['signals']
-            f.close()
         print ('Previous preprocessing of BCI dataset found, reusing it')
     else:    
         for item in lkp:
