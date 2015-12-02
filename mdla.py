@@ -835,7 +835,8 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
                 break
         if callback is not None:
             callback(locals())
-            
+    # reformating the error
+    errors = array(errors).reshape((n_iter, n_batches))
     return code, dictionary, errors
 
 def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
@@ -1017,7 +1018,8 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     if verbose >= 2:
         dt = (time() - t0)
         print ('[MDL] learning done (total time: % 3is, % 4.1fmn)' % (dt, dt / 60))
-
+    # reformating the error
+    errors = array(errors).reshape((n_iter, n_batches))
     return dictionary, errors
 
 class MultivariateDictMixin(TransformerMixin):
