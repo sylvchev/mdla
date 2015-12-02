@@ -211,16 +211,28 @@ d3 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 random_state=rng_global)
 d3 = d3.fit(array(X))
 
-plt.figure()
-plt.plot (array(d1.error_))
+fig = plt.figure()
+objf = fig.add_suplot(1, 1, 1)
+ofun = objf.boxplot(d1.error_)
+medianof = [median.get_ydata()[0]
+            for n, median in enumerate(ofun['medians'])]
+axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
 plt.savefig('EEG-decomposition-error-half1'+figname+'.png')
 
-plt.figure()
-plt.plot (array(d2.error_))
+fig = plt.figure()
+objf = fig.add_suplot(1, 1, 1)
+ofun = objf.boxplot(d2.error_)
+medianof = [median.get_ydata()[0]
+            for n, median in enumerate(ofun['medians'])]
+axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
 plt.savefig('EEG-decomposition-error-half2'+figname+'.png')
 
-plt.figure()
-plt.plot (array(d3.error_))
+fig = plt.figure()
+objf = fig.add_suplot(1, 1, 1)
+ofun = objf.boxplot(d2.error_)
+medianof = [median.get_ydata()[0]
+            for n, median in enumerate(ofun['medians'])]
+axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
 plt.savefig('EEG-decomposition-error-full'+figname+'.png')
 
 from mdla import multivariate_sparse_encode
