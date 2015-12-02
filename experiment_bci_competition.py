@@ -102,28 +102,28 @@ def read_BCI_signals():
                 stop  = 4*SampleRate[0,0]/dfactor
 
                 # ev = np.concatenate((EVENTPOS[EVENTTYP==LeftHand], EVENTPOS[EVENTTYP==RightHand]))
-                ev = EVENTPOS[EVENTTYP==LeftHand] # Only left hand movement
+                ev = EVENTPOS[EVENTTYP==LeftHand] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
                     classes.append('LeftHand')
-                ev = EVENTPOS[EVENTTYP==RightHand] # Only left hand movement
+                ev = EVENTPOS[EVENTTYP==RightHand] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
                     classes.append('RightHand')
-                ev = EVENTPOS[EVENTTYP==Foot] # Only left hand movement
+                ev = EVENTPOS[EVENTTYP==Foot] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
                     classes.append('Foot')
-                ev = EVENTPOS[EVENTTYP==Tongue] # Only left hand movement
+                ev = EVENTPOS[EVENTTYP==Tongue] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
@@ -180,13 +180,13 @@ rng_global = RandomState(1)
 n_samples = len(X_half1)
 n_dims = X_half1[0].shape[0] # half of the 22 electrodes
 n_features = X_half1[0].shape[1] # 375, 3s of decimated signal at 125Hz
-kernel_init_len = 60 # kernel size is 60
-n_kernels = 90 
-n_nonzero_coefs = 6
+kernel_init_len = 50 # kernel size is 60
+n_kernels = 60 
+n_nonzero_coefs = 1
 learning_rate = 5.0
 n_iter = 100
 n_jobs, batch_size = -1, None # n_cpu, 5*n_cpu
-figname="-90ker-K6-klen60-lr5.0-emm-all"
+figname="-60ker-K1-klen50-lr5.0-emm-all"
 
 d1 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 batch_size=batch_size, n_iter=n_iter,
@@ -204,6 +204,14 @@ d2 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 random_state=rng_global)
 d2 = d2.fit(X_half2)
 
+d3 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
+                batch_size=batch_size, n_iter=n_iter,
+                n_nonzero_coefs=n_nonzero_coefs, 
+                n_jobs=n_jobs, learning_rate=learning_rate,
+                kernel_init_len=kernel_init_len, verbose=1,
+                random_state=rng_global)
+d3 = d3.fit(array(X))
+
 plt.figure()
 plt.plot (array(d1.error_))
 plt.savefig('EEG-decomposition-error-half1'+figname+'.png')
@@ -211,6 +219,10 @@ plt.savefig('EEG-decomposition-error-half1'+figname+'.png')
 plt.figure()
 plt.plot (array(d2.error_))
 plt.savefig('EEG-decomposition-error-half2'+figname+'.png')
+
+plt.figure()
+plt.plot (array(d3.error_))
+plt.savefig('EEG-decomposition-error-full'+figname+'.png')
 
 from mdla import multivariate_sparse_encode
 from collections import Counter
@@ -255,6 +267,27 @@ width = 1
 plt.bar(indexes, values, width, linewidth=0)
 plt.savefig('EEG-coeff_hist_sorted-half2'+figname+'.png')
 
+r, code = multivariate_sparse_encode(array(X), d3.kernels_,
+                                     n_nonzero_coefs=n_nonzero_coefs,
+                                     n_jobs=n_jobs, verbose=2)
+
+decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
+decomposition_weight.sort()
+weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
+order = weight.argsort()
+saveKernelPlot(d3.kernels_, d3.n_kernels, order=order, label=weight, figname='EEG-kernels-full'+figname, row=6)
+
+correlation = Counter(decomposition_weight).items()
+correlation.sort(key=lambda x: x[1])
+labels, values = zip(*correlation)
+indexes = arange(len(correlation))
+
+plt.figure()
+width = 1
+plt.bar(indexes, values, width, linewidth=0)
+plt.savefig('EEG-coeff_hist_sorted-full'+figname+'.png')
+
+
 with open('EEG-savedico-half1'+figname+'.pkl', 'w+') as f:
     o = {'kernels':d1.kernels_, 'error':d1.error_, 'kernel_init_len':d1.kernel_init_len, 'learning_rate':d1.learning_rate, 'n_iter':d1.n_iter, 'n_jobs':d1.n_jobs, 'n_kernels':d1.n_kernels, 'n_nonzero_coefs':d1.n_nonzero_coefs}
     pickle.dump(o,f)
@@ -263,10 +296,19 @@ with open('EEG-savedico-half2'+figname+'.pkl', 'w+') as f:
     o = {'kernels':d2.kernels_, 'error':d2.error_, 'kernel_init_len':d2.kernel_init_len, 'learning_rate':d2.learning_rate, 'n_iter':d2.n_iter, 'n_jobs':d2.n_jobs, 'n_kernels':d2.n_kernels, 'n_nonzero_coefs':d2.n_nonzero_coefs}
     pickle.dump(o,f)
 
-print ("Computing distances")
-print ("Wasserstein chordal distance is", emd(d1.kernels_, d2.kernels_, 'chordal', scale=True))
-print ("Wasserstein Fubini-Study is", emd(d1.kernels_, d2.kernels_, 'fubinistudy', scale=True))
+with open('EEG-savedico-full'+figname+'.pkl', 'w+') as f:
+    o = {'kernels':d3.kernels_, 'error':d3.error_, 'kernel_init_len':d3.kernel_init_len, 'learning_rate':d3.learning_rate, 'n_iter':d3.n_iter, 'n_jobs':d3.n_jobs, 'n_kernels':d3.n_kernels, 'n_nonzero_coefs':d3.n_nonzero_coefs}
+    pickle.dump(o,f)
 
+print ("Computing distances")
+print ("Wasserstein chordal distance half1-2 is", emd(d1.kernels_, d2.kernels_, 'chordal', scale=True))
+print ("Wasserstein Fubini-Study half1-2 is", emd(d1.kernels_, d2.kernels_, 'fubinistudy', scale=True))
+print ("Wasserstein chordal distance full-half1 is", emd(d3.kernels_, d1.kernels_, 'chordal', scale=True))
+print ("Wasserstein chordal distance full-half1 is", emd(d3.kernels_, d1.kernels_, 'fubinistudy', scale=True))
+print ("Wasserstein chordal distance full-half2 is", emd(d3.kernels_, d2.kernels_, 'chordal', scale=True))
+print ("Wasserstein chordal distance full-half2 is", emd(d3.kernels_, d2.kernels_, 'fubinistudy', scale=True))
+
+# 90ker-K6-klen60-lr5.0
 # Wasserstein chordal distance is 0.636417242678
 # Wasserstein Fubini-Study is 0.679802451865
 
