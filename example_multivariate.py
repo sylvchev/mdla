@@ -122,7 +122,7 @@ for i in range(max_iter):
     wasserstein.append(emd(learned_dict.kernels_, generating_dict,
                         'chordal', scale=True))
     # Get the objective error
-    objective_error.append(array(learned_dict.error_ ).sum())
+    objective_error.append(learned_dict.error_.sum())
     
 plot_multivariate(array(objective_error), array(detection_rate),
                 100.-array(wasserstein), n_iter, 'multivariate-case')

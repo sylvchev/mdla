@@ -1262,7 +1262,7 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
                     random_state=random_state, max_iter=self.max_iter,
                     callback=self.callback, dict_obj = self)
         self.kernels_ = list(dictionary)
-        self.error_ = list(err)
+        self.error_ = err
 
         # if self.verbose >= 1:
         #     print ('\nEnd of fit')
@@ -1418,7 +1418,7 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
                         dict_obj = self)
         self.kernels_ = list(dictionary)
         self.iter_offset_ = self.n_iter
-        self.error_ = list(e)
+        self.error_ = e
         
         return self
 
@@ -1479,7 +1479,7 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
                     dict_obj = self)
         self.kernels_ = list(dictionary)
         self.iter_offset_ = iter_offset + self.n_iter
-        self.error_ = list(e)
+        self.error_ = e
 
         return self
 

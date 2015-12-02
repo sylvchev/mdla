@@ -16,6 +16,11 @@ def plot_univariate(objective_error, detection_rate, wasserstein,
     
     # plotting data from objective error
     objerr = fig.add_subplot(1,3,1)
+    ofun = objerr.boxplot(objective_error)
+    medianof = [median.get_ydata()[0]
+                for n, median in enumerate(ofun['medians'])]
+    axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
+    
     _ = objerr.plot(step*arange(1, len(objective_error)+1), objective_error, 
                      color='green', label=r'Objective error')
     objerr.axis([0, len(objective_error)-1, min(objective_error),
@@ -123,7 +128,7 @@ for i in range(max_iter):
     wasserstein.append(emd(learned_dict.kernels_, generating_dict,
                         'chordal', scale=True))
     # Get the objective error
-    objective_error.append(array(learned_dict.error_ ).sum())
+    objective_error.append(learned_dict.error_.sum())
     
 plot_univariate(array(objective_error), array(detection_rate),
                 array(wasserstein), n_iter, 'univariate-case')
