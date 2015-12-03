@@ -17,6 +17,7 @@ if display is None:
     import matplotlib
     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib import colors
 
 def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
                       n_samples=10, n_features=5, n_dims=3, snr=1000):
@@ -57,34 +58,97 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
 
     return dico, signals, decomposition
 
+def plot_boxes(fig, data, color='blue', n_iter=100, label=""):
+    bp = fig.boxplot(data)
+    plt.setp(bp['medians'], color=color)
+    plt.setp(bp['caps'], color=color)
+    plt.setp(bp['boxes'], color=color)
+    plt.setp(bp['fliers'], color=color)
+    plt.setp(bp['whiskers'], color=color)
+    med = [m.get_ydata()[0] for n, m in enumerate(bp['medians'])]
+    ax = fig.plot(arange(1, n_iter+1), med, linewidth=1, color=color,
+                                label=label)
+
+def plot_recov_all(wc, wfs, wcpa, wbc, wg, wfb, hc, hfs, hcpa,
+                   hbc, hg, hfb, dr99, dr97, n_iter, figname):
+    snr = ['30', '20', '10']
+    fig = plt.figure(figsize=(18,10))
+    for i, s in enumerate(snr):
+        # plotting data from detection rate
+        detection = fig.add_subplot(3, 3, i*3+1)
+        plot_boxes(detection, dr99[i,:,:]/100., 'green',
+                   n_iter, r'$c_\operatorname{99}$')
+        plot_boxes(detection, dr97[i,:,:]/100., 'magenta',
+                   n_iter, r'$c_\operatorname{97}$')
+        detection.axis([0, n_iter, 0, 1])
+        detection.set_xticks(arange(0, n_iter+1, 10))
+        detection.set_xticklabels([])
+        detection.legend(loc='lower right')
+
+        methaus = fig.add_subplot(3, 3, i*3+2)
+        plot_boxes(methaus, 1-hc[i,:,:], 'chartreuse',
+                   n_iter, r'$1-d_H^c$')
+        plot_boxes(methaus, 1-hcpa[i,:,:], 'red',
+                   n_iter, r'$1-d_H^{cpa}$')
+        plot_boxes(methaus, 1-hfs[i,:,:], 'magenta',
+                   n_iter, r'$1-d_H^{fs}$')
+        plot_boxes(methaus, 1-hbc[i,:,:], 'blue',
+                   n_iter, r'$1-d_H^{bc}$')
+        plot_boxes(methaus, 1-hg[i,:,:], 'deepskyblue',
+                   n_iter, r'$1-d_H^{g}$')
+        plot_boxes(methaus, 1-hfb[i,:,:], 'orange',
+                   n_iter, r'$1-d_H^{fb}$')
+        
+        methaus.axis([0, n_iter, 0, 1])
+        methaus.set_xticks(arange(0, n_iter+1, 10))
+        methaus.set_xticklabels([])
+        methaus.set_yticklabels([])
+        methaus.legend(loc='lower right')
+
+        metwass = fig.add_subplot(3, 3, i*3+3)
+        plot_boxes(metwass, 1-wc[i,:,:], 'chartreuse',
+                   n_iter, r'$1-d_W^c$')
+        plot_boxes(metwass, 1-wcpa[i,:,:], 'red',
+                   n_iter, r'$1-d_W^{cpa}$')
+        plot_boxes(metwass, 1-wfs[i,:,:], 'magenta',
+                   n_iter, r'$1-d_W^{fs}$')
+        plot_boxes(metwass, 1-wbc[i,:,:], 'blue',
+                   n_iter, r'$1-d_W^{bc}$')
+        plot_boxes(metwass, 1-wg[i,:,:], 'deepskyblue',
+                   n_iter, r'$1-d_W^{g}$')
+        plot_boxes(metwass, 1-wfb[i,:,:], 'orange',
+                   n_iter, r'$1-d_W^{fb}$')
+        metwass.axis([0, n_iter, 0, 1])
+        metwass.set_xticks(arange(0, n_iter+1, 10))
+        metwass.set_xticklabels([])
+        metwass.set_yticklabels([])
+        metwass.legend(loc='lower right')
+        metwass.set_title(' ')
+
+        metwass.annotate('SNR '+s, xy=(.51, 1.-i*1./3.+i*0.01-0.001),
+                xycoords='figure fraction',
+                horizontalalignment='center', verticalalignment='top',
+                fontsize='large')
+
+    detection.set_xticks(arange(0, n_iter+1, 10))
+    detection.set_xticklabels(arange(0, n_iter+1, 10))
+    methaus.set_xticks(arange(0, n_iter+1, 10))
+    methaus.set_xticklabels(arange(0, n_iter+1, 10))
+    metwass.set_xticks(arange(0, n_iter+1, 10))
+    metwass.set_xticklabels(arange(0, n_iter+1, 10))
+    plt.tight_layout(1.2)
+    plt.savefig(figname+".png")                        
+        
 def plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, figname):
     snr = ['30', '20', '10']
     fig = plt.figure(figsize=(18,10))
     for i, s in enumerate(snr):
         # plotting data from detection rate
         detection = fig.add_subplot(3, 3, i*3+1)
-        det99 = detection.boxplot(dr99[i,:,:]/100.)
-        plt.setp(det99['medians'], color='green')
-        plt.setp(det99['caps'], color='green')
-        plt.setp(det99['boxes'], color='green')
-        plt.setp(det99['fliers'], color='green')
-        plt.setp(det99['whiskers'], color='green')
-        medianlt99 = [median.get_ydata()[0]
-                      for n, median in enumerate(det99['medians'])]
-        axlt99 = detection.plot(arange(1, n_iter+1), medianlt99,
-                                linewidth=1, color='green',
-                                label=r'$c_\operatorname{99}$')
-        det97 = detection.boxplot(dr97[i,:,:]/100.)
-        plt.setp(det97['medians'], color='magenta')
-        plt.setp(det97['caps'], color='magenta')
-        plt.setp(det97['boxes'], color='magenta')
-        plt.setp(det97['fliers'], color='magenta')
-        plt.setp(det97['whiskers'], color='magenta')
-        medianlt97 = [median.get_ydata()[0]
-                      for n, median in enumerate(det97['medians'])]
-        axlt97 = detection.plot(arange(1, n_iter+1), medianlt97,
-                                linewidth=1, color='magenta',
-                                label=r'$c_\operatorname{97}$')
+        plot_boxes(detection, dr99[i,:,:]/100., 'green',
+                   n_iter, r'$c_\operatorname{99}$')
+        plot_boxes(detection, dr97[i,:,:]/100., 'magenta',
+                   n_iter, r'$c_\operatorname{97}$')
         detection.axis([0, n_iter, 0, 1])
         detection.set_xticks(arange(0, n_iter+1, 10))
         detection.set_xticklabels([])
@@ -92,26 +156,10 @@ def plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, figname):
     
         # plotting data from hausdorff metric
         methaus = fig.add_subplot(3, 3, i*3+2)
-        hausch = methaus.boxplot(1-hc[i,:,:]) 
-        plt.setp(hausch['medians'], color='cyan')
-        plt.setp(hausch['caps'], color='cyan')
-        plt.setp(hausch['boxes'], color='cyan')
-        plt.setp(hausch['fliers'], color='cyan')
-        plt.setp(hausch['whiskers'], color='cyan')
-        medianhc = [median.get_ydata()[0]
-                    for n,median in enumerate(hausch['medians'])]
-        axhc = methaus.plot(arange(1, n_iter+1), medianhc, linewidth=1,
-                            label=r'$1-d_H^c$', color='cyan')
-        hausfs = methaus.boxplot(1-hfs[i,:,:]) 
-        plt.setp(hausfs['medians'], color='yellow')
-        plt.setp(hausfs['caps'], color='yellow')
-        plt.setp(hausfs['boxes'], color='yellow')
-        plt.setp(hausfs['fliers'], color='yellow')
-        plt.setp(hausfs['whiskers'], color='yellow')
-        medianhfs = [median.get_ydata()[0]
-                     for n, median in enumerate(hausfs['medians'])]
-        axhfs = methaus.plot(arange(1, n_iter+1), medianhfs, linewidth=1,
-                             label=r'$1-d_H^{fs}$', color='yellow')
+        plot_boxes(methaus, 1-hc[i,:,:], 'cyan',
+                   n_iter, r'$1-d_H^c$')
+        plot_boxes(methaus, 1-hfs[i,:,:], 'yellow',
+                   n_iter, r'$1-d_H^{fs}$')
         methaus.axis([0, n_iter, 0, 1])
         methaus.set_xticks(arange(0, n_iter+1, 10))
         methaus.set_xticklabels([])
@@ -120,26 +168,10 @@ def plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, figname):
 
         # plotting data from wasserstein metric
         metwass = fig.add_subplot(3, 3, i*3+3)
-        wassch = metwass.boxplot(1-wc[i,:,:]) 
-        plt.setp(wassch['medians'], color='red')
-        plt.setp(wassch['caps'], color='red')
-        plt.setp(wassch['boxes'], color='red')
-        plt.setp(wassch['fliers'], color='red')
-        plt.setp(wassch['whiskers'], color='red')
-        medianwc = [median.get_ydata()[0]
-                    for n, median in enumerate(wassch['medians'])]
-        axwc = metwass.plot(arange(1, n_iter+1), medianwc, linewidth=1,
-                            label=r'$1-d_W^c$', color='red')
-        wassfs = metwass.boxplot(1-wfs[i,:,:]) 
-        plt.setp(wassfs['medians'], color='blue')
-        plt.setp(wassfs['caps'], color='blue')
-        plt.setp(wassfs['boxes'], color='blue')
-        plt.setp(wassfs['fliers'], color='blue')
-        plt.setp(wassfs['whiskers'], color='blue')
-        medianwfs = [median.get_ydata()[0]
-                     for n, median in enumerate(wassfs['medians'])]
-        axwfs = metwass.plot(arange(1, n_iter+1), medianwfs, linewidth=1,
-                             label=r'$1-d_W^{fs}$', color='blue')
+        plot_boxes(metwass, 1-wc[i,:,:], 'red',
+                   n_iter, r'$1-d_W^c$')
+        plot_boxes(metwass, 1-wfs[i,:,:], 'blue',
+                   n_iter, r'$1-d_W^{fs}$')
         metwass.axis([0, n_iter, 0, 1])
         metwass.set_xticks(arange(0, n_iter+1, 10))
         metwass.set_xticklabels([])
@@ -257,5 +289,6 @@ else:
              'wcpa':wcpa, 'wbc':wbc, 'wg':wg, 'wfb':wfb, 'hcpa':hcpa,
              'hbc':hbc, 'hg':hg, 'hfb':hfb}
         pickle.dump(o, f)
-    plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, "multivariate_recov")
+    # plot_recov(wc, wfs, hc, hfs, dr99, dr97, n_iter, "multivariate_recov")
+    plot_recov_all(wc, wfs, wcpa, wbc, wg, wfb, hc, hfs, hcpa, hbc, hg, hfb, dr99, dr97, n_iter, "multivariate_recov_all")
         
