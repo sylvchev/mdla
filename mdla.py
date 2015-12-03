@@ -274,11 +274,9 @@ def _multivariate_sparse_encode(X, kernels, n_nonzero_coefs=None,
     """
     n_samples, n_features, n_dims = X.shape
     n_kernels = len(kernels)
-    
-    if n_nonzero_coefs is None:
-        raise ValueError("The sparsity should be indicated")
+
     if n_nonzero_coefs > n_kernels:
-        raise ValueError("The sparsity should be less than the"
+        raise ValueError("The sparsity should be less than the "
                          "number of atoms")
     if n_nonzero_coefs <= 0:
         raise ValueError("The sparsity should be positive")
@@ -376,7 +374,6 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         print ('[Debug-MOMP] starting parallel %d jobs for %d samples'
                % (n_jobs, n_samples))
         
-    # res_views, code_views
     views = Parallel(n_jobs=n_jobs)(
         delayed(_multivariate_sparse_encode)(
             X[this_slice], kernels, n_nonzero_coefs, verbose)
@@ -515,6 +512,10 @@ def _compute_gradient(dictionary, decomposition, residual,
                 (k_len-dOffsets[dOffsets_idx])
                 )/k_len
         hessian_base = np.sum(np.abs(coefs[active_idx])**2)
+        if learning_rate+hessian_corr+hessian_base == 0:
+            print ('[ComputeGrad] learning_rate:', learning_rate,
+                   ', hessian_corr:', hessian_corr,
+                   ', hessian_base:', hessian_base)
         step[i] = 1./(learning_rate+hessian_corr+hessian_base)
         if ((hessian_corr+hessian_base) != 0):
             hessian_sum += hessian_corr + hessian_base
@@ -712,6 +713,9 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
     n_jobs: int,
         Number of parallel jobs to run, or -1 to autodetect.
 
+    learning_rate: real,
+        hyperparameter controling the convergence rate
+                
     dict_init: list of arrays
         Initial value for the dictionary for warm restart scenarios.
         List of n_kernels elements, each one is an array of shape
@@ -1171,6 +1175,10 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
     random_state : int or RandomState
         Pseudo number generator state used for random sampling.
 
+    learning_rate : float
+        Value for the learning rate exponent, of the form
+        i**learning_rate, where i is the iteration.
+
     callback: function 
         Function called during learning process, the only parameter
         is a dictionary containing all local variables
@@ -1309,6 +1317,10 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
     verbose :
         degree of verbosity of the printed output
 
+    learning_rate : float
+        Value for the learning rate exponent, of the form
+        i**learning_rate, where i is the iteration.
+        
     batch_size : int,
         number of samples in each mini-batch
 
