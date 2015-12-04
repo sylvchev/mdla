@@ -41,6 +41,10 @@ def _normalize(dictionary):
     return dictionary
 
 def _get_learning_rate(iteration, max_iteration, learning_rate):
+    #TODO: change to have last_iterations=max_iterations
+    #TODO: verify that max_iter=1 is not a problem for partial_fit
+    if learning_rate == 0.:
+        return 0.
     last_iterations = np.floor(max_iteration*2./3.)
     if iteration >= last_iterations:
         return last_iterations**learning_rate
@@ -512,17 +516,15 @@ def _compute_gradient(dictionary, decomposition, residual,
                 (k_len-dOffsets[dOffsets_idx])
                 )/k_len
         hessian_base = np.sum(np.abs(coefs[active_idx])**2)
-        if learning_rate+hessian_corr+hessian_base == 0:
-            print ('[ComputeGrad] learning_rate:', learning_rate,
-                   ', hessian_corr:', hessian_corr,
-                   ', hessian_base:', hessian_base)
-        step[i] = 1./(learning_rate+hessian_corr+hessian_base)
+        # if learning_rate+hessian_corr+hessian_base == 0.:
+        if learning_rate == 0.:
+            # Gauss-Newton method if mu = 0
+            step[i] = 0
+        else:
+            step[i] = 1./(learning_rate+hessian_corr+hessian_base)
         if ((hessian_corr+hessian_base) != 0):
             hessian_sum += hessian_corr + hessian_base
             hessian_count += 1
-        if not (np.isfinite(step[i])):
-            # Gauss-Newton method if mu = 0
-            step[i] = 0
 
     if verbose >= 5:
         print ('[M-DU]: step is:')
@@ -576,11 +578,6 @@ def _update_dict(dictionary, decomposition, residual,
         Updated dictionary.
         
     """
-    # if verbose >= 1:
-    #     initial = list(dictionary)
-    #     print ('[MDLA-DU] Avant modif:')
-    #     print (dictionary[7])
-
     if verbose >= 2:
         tstart = time()
 
@@ -599,6 +596,7 @@ def _update_dict(dictionary, decomposition, residual,
         print ([(_g[i]**2).sum(0).mean() /
                 (dictionary[i]**2).sum(0).mean()
                 for i in range(len(dictionary))])
+        print ("learning_rate is ", learning_rate)
 
     for i in range(len(dictionary)):
         dictionary[i] = dictionary[i] + _g[i]
@@ -759,9 +757,6 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
     """
     t0 = time()
     n_samples, n_features, n_dims = X.shape
-    # if n_samples < n_kernels:
-    #     print ('Too few examples, reducing the number of kernel to', n_samples)
-    #     n_kernels = n_samples   
     random_state = check_random_state(random_state)
 
     if n_jobs == -1:

@@ -106,17 +106,23 @@ def test_sparse_encode():
 def test_dict_init():
     n_kernels = 8
     d = [np.random.randn(n_features, n_dims) for i in range(n_kernels)]
+    for i in range(len(d)):
+        d[i] /= np.linalg.norm(d[i], 'fro')
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
-                                    max_iter=1, n_nonzero_coefs=1,
-                                    dict_init=d, verbose=4)
-    code = dico.fit(X).transform(X[0,:,:])
-    assert_true(len(code[0]) > 1)
+                                    max_iter=1, n_nonzero_coefs=1, learning_rate=0.,
+                                    dict_init=d, verbose=5).fit(X)
+    for i in range(n_kernels):
+        assert_array_almost_equal(dico.kernels_[i], d[i])
+    # code = dico.fit(X).transform(X[0,:,:])
+    # assert_true(len(code[0]) > 1)
     
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 random_state=0, n_iter=1, n_nonzero_coefs=1,
-                dict_init=d, verbose=4)
-    code = dico.fit(X).transform(X[0,:,:])
-    assert_true(len(code[0]) <= 1)
+                dict_init=d, verbose=1, learning_rate=0.).fit(X)
+    for i in range(n_kernels):
+        assert_array_almost_equal(dico.kernels_[i], d[i])
+    # code = dico.fit(X).transform(X[0,:,:])
+    # assert_true(len(code[0]) <= 1)
 
 def test_mdla_dict_init():
     n_kernels = 10
