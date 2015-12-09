@@ -97,18 +97,18 @@ def chordal(A, B):
         if d2 < 0.: return sqrt(abs(d2))
         else: return sqrt(d2)
         
-def fubiniStudy(A, B):
+def fubini_study(A, B):
     '''
-    fubiniStudy(A, B) Compute the Fubini-Study distance
+    fubini_study(A, B) Compute the Fubini-Study distance
     Compute the Fubini-Study distance based on principal angles between A and B
     as d=\acos{ \prod_i \theta_i}
     '''
     if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in fubiniStudy(A, B)')
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in fubini_study(A, B)')
     if np.allclose(A, B): return 0.
     return arccos(la.det(sl.orth(A).T.dot(sl.orth(B))))
 
-def binetCauchy(A, B):
+def binet_cauchy(A, B):
     '''Compute the Binet-Cauchy distance
     Compute the Binet-Cauchy distance based on principal angles between A
     and B with d=\sqrt{ 1 - \prod_i \cos^2 \theta_i}
@@ -130,11 +130,11 @@ def frobenius_based(A, B):
         raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobenius_based(A, B)')
     return la.norm(np.abs(A)-np.abs(B), 'fro')
 
-def absEuclidean(A, B):
+def abs_euclidean(A, B):
     if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in absEuclidean(A, B)')
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in abs_euclidean(A, B)')
     if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
-        raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in absEuclidean(A, B)')
+        raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in abs_euclidean(A, B)')
     return 2.*(1.-np.abs(A.T.dot(B)))
 
 def euclidean (A, B):
@@ -148,8 +148,8 @@ def hausdorff(D1, D2, gdist, scale=False):
     '''
     Compute the Hausdorff distance between two sets of elements, here
     dictionary atoms, using a ground distance.
-    Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
-    or "frobenius".
+    Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic",
+    "frobenius", "abs_euclidean" or "euclidean".
     The scale parameter changes the return value to be between 0 and 1.
     '''
     if   gdist == "chordal":
@@ -157,15 +157,15 @@ def hausdorff(D1, D2, gdist, scale=False):
     elif   gdist == "chordalPA":
         g = chordalPA
     elif gdist == "fubinistudy":
-        g = fubiniStudy
+        g = fubini_study
     elif gdist == "binetcauchy":
-        g = binetCauchy
+        g = binet_cauchy
     elif gdist == "geodesic":
         g = geodesic
     elif gdist == "frobenius":
         g = frobenius_based
-    elif gdist == "absEuclidean":
-        g = absEuclidean
+    elif gdist == "abs_euclidean":
+        g = abs_euclidean
     elif gdist == "euclidean":
         g = euclidean
     else:
@@ -216,8 +216,8 @@ def emd(D1, D2, gdist, scale=False):
     '''
     Compute the Earth Mover's Distance (EMD) between two sets of elements,
     here dictionary atoms, using a ground distance.
-    Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
-    or "frobenius".
+    Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic",
+    "frobenius", "abs_euclidean" or "euclidean".
     The scale parameter changes the return value to be between 0 and 1.
     '''
     if gdist == "chordal":
@@ -225,15 +225,15 @@ def emd(D1, D2, gdist, scale=False):
     elif gdist == "chordalPA":
         g = chordalPA
     elif gdist == "fubinistudy":
-        g = fubiniStudy
+        g = fubini_study
     elif gdist == "binetcauchy":
-        g = binetCauchy
+        g = binet_cauchy
     elif gdist == "geodesic":
         g = geodesic
     elif gdist == "frobenius":
         g = frobenius_based
-    elif gdist == "absEuclidean":
-        g = absEuclidean
+    elif gdist == "abs_euclidean":
+        g = abs_euclidean
     elif gdist == "euclidean":
         g = euclidean
     else:
