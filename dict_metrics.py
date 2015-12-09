@@ -14,6 +14,7 @@ atoms.
 # TODO: add docstring to criteria fonction
 #       verify Fubini-Study scale parameter
 #       verify beta dist behavior, seems like 1-bd
+#       change scale behavior, replace 1-d with d !
 
 import numpy as np
 import numpy.linalg as la
@@ -56,8 +57,9 @@ def chordal(A, B):
     where K is the rank of A and B, || . ||_F is the Frobenius norm,
     \bar{A} is the orthogonal basis associated with A and the same goes for B.
     '''
-    if (A.shape != B.shape):
-        raise AtomSizeError ('Atoms have not the same dimension (', A.shape, ' and ', B.shape,'). Error raised in chordal(A, B)')
+    if A.shape != B.shape:
+        raise ValueError('Atoms have not the same dimension (', A.shape, ' and ', B.shape,'). Error raised in chordal(A, B)')
+    
     # Atoms should have more lines than columns
     # if (A.shape[1] > A.shape[0]):
     #     A = A.T
@@ -76,9 +78,9 @@ def fubiniStudy(A, B):
     Compute the Fubini-Study distance based on principal angles between A and B
     as d=\acos{ \prod_i \theta_i}
     '''
-    # if (A.shape[1] > A.shape[0]):
-    #     A = A.T
-    #     B = B.T
+    if A.shape != B.shape:
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in fubiniStudy(A, B)')
+    if np.allclose(A, B): return 0.
     return arccos(la.det(sl.orth(A).T.dot(sl.orth(B))))
 
 def principalAngles(A, B):
@@ -130,12 +132,22 @@ def geodesic(A, B):
     return la.norm(theta)
 
 def frobeniusBased(A, B):
+    if A.shape != B.shape:
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobeniusBased(A, B)')
     return la.norm(np.abs(A)-np.abs(B), 'fro')
 
 def absEuclidean(A, B):
+    if A.shape != B.shape:
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in absEuclidean(A, B)')
+    if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
+        raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in absEuclidean(A, B)')
     return 2.*(1.-np.abs(A.T.dot(B)))
 
 def euclidean (A, B):
+    if A.shape != B.shape:
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in euclidean(A, B)')
+    if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
+        raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in euclidean(A, B)')
     return 2.*(1.-A.T.dot(B))
 
 def hausdorff(D1, D2, gdist, scale=False):
@@ -198,18 +210,25 @@ def hausdorff(D1, D2, gdist, scale=False):
     d =  max(np.max(np.min(gdm, axis=0)), np.max(np.min(gdm, axis=1)))
     if not scale: return d
     else:
-        if gdist == "chordal" or gdist == "chordalPA":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        elif gdist == "fubinistudy":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        elif gdist == "binetcauchy":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        elif gdist == "geodesic":
-            return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
+        if (gdist == "chordal" or gdist == "chordalPA" or gdist == "fubinistudy"
+            or gdist == "binetcauchy" or gdist == "geodesic"):
+            return d/sqrt(D1[0].shape[0])
         elif gdist == "frobeniusBased":
             return (sqrt(2.)-d)/sqrt(2.)
         else:
             return d
+        # if gdist == "chordal" or gdist == "chordalPA":
+        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
+        # elif gdist == "fubinistudy":
+        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
+        # elif gdist == "binetcauchy":
+        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
+        # elif gdist == "geodesic":
+        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
+        # elif gdist == "frobeniusBased":
+        #     return (sqrt(2.)-d)/sqrt(2.)
+        # else:
+        #     return d
         
 def emd(D1, D2, gdist, scale=False):
     '''
@@ -291,18 +310,25 @@ def emd(D1, D2, gdist, scale=False):
 
     if not scale: return d
     else:
-        if gdist == "chordal" or gdist == "chordalPA":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        elif gdist == "fubinistudy":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        elif gdist == "binetcauchy":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        elif gdist == "geodesic":
-            return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
+        if (gdist == "chordal" or gdist == "chordalPA" or gdist == "fubinistudy"
+            or gdist == "binetcauchy" or gdist == "geodesic"):
+            return d/sqrt(D1[0].shape[0])
         elif gdist == "frobeniusBased":
             return (sqrt(2.)-d)/sqrt(2.)
         else:
             return d
+        # if gdist == "chordal" or gdist == "chordalPA":
+        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
+        # elif gdist == "fubinistudy":
+        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
+        # elif gdist == "binetcauchy":
+        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
+        # elif gdist == "geodesic":
+        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
+        # elif gdist == "frobeniusBased":
+        #     return (sqrt(2.)-d)/sqrt(2.)
+        # else:
+        #     return d
 
 def computeCorrelation(s, D):
     corr = np.zeros((len(D), s.shape[1]))
