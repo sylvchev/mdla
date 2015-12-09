@@ -214,21 +214,9 @@ def hausdorff(D1, D2, gdist, scale=False):
             or gdist == "binetcauchy" or gdist == "geodesic"):
             return d/sqrt(D1[0].shape[0])
         elif gdist == "frobeniusBased":
-            return (sqrt(2.)-d)/sqrt(2.)
+            return d/sqrt(2.)
         else:
             return d
-        # if gdist == "chordal" or gdist == "chordalPA":
-        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        # elif gdist == "fubinistudy":
-        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        # elif gdist == "binetcauchy":
-        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        # elif gdist == "geodesic":
-        #     return (sqrt(D1[0].shape[0])-d)/sqrt(D1[0].shape[0])
-        # elif gdist == "frobeniusBased":
-        #     return (sqrt(2.)-d)/sqrt(2.)
-        # else:
-        #     return d
         
 def emd(D1, D2, gdist, scale=False):
     '''
@@ -314,21 +302,9 @@ def emd(D1, D2, gdist, scale=False):
             or gdist == "binetcauchy" or gdist == "geodesic"):
             return d/sqrt(D1[0].shape[0])
         elif gdist == "frobeniusBased":
-            return (sqrt(2.)-d)/sqrt(2.)
+            return d/sqrt(2.)
         else:
             return d
-        # if gdist == "chordal" or gdist == "chordalPA":
-        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        # elif gdist == "fubinistudy":
-        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        # elif gdist == "binetcauchy":
-        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        # elif gdist == "geodesic":
-        #     return (sqrt(D1[0].shape[1])-d)/sqrt(D1[0].shape[1])
-        # elif gdist == "frobeniusBased":
-        #     return (sqrt(2.)-d)/sqrt(2.)
-        # else:
-        #     return d
 
 def computeCorrelation(s, D):
     corr = np.zeros((len(D), s.shape[1]))
