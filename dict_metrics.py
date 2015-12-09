@@ -300,7 +300,7 @@ def emd(D1, D2, gdist, scale=False):
         else:
             return d
 
-def computeCorrelation(s, D):
+def compute_correlation(s, D):
     corr = np.zeros((len(D), s.shape[1]))
     for i in range(len(D)): # for all atoms
         corrTmp = 0
@@ -309,11 +309,11 @@ def computeCorrelation(s, D):
         corr[i,:len(corrTmp)] = corrTmp
     return corr
 
-def detectionRate(dictRef, dictLearn, threshold):
+def detection_rate(dictRef, dictLearn, threshold):
     nbDR = 0
     corr = np.zeros((len(dictRef), len(dictLearn)))
     for i in range(len(dictRef)):
-        corrTmp = computeCorrelation(np.hstack((np.zeros((dictRef[0].shape[0],5)), dictRef[i], np.zeros((dictRef[0].shape[0],5)))), dictLearn)
+        corrTmp = compute_correlation(np.hstack((np.zeros((dictRef[0].shape[0],5)), dictRef[i], np.zeros((dictRef[0].shape[0],5)))), dictLearn)
         for j in range(len(dictLearn)):
             idxMax = np.argmax(np.abs(corrTmp[j,:]))
             corr[i,j] = corrTmp[j,idxMax]
@@ -326,7 +326,7 @@ def detectionRate(dictRef, dictLearn, threshold):
         corrLocal[idxMax[0],:] = np.zeros(len(dictLearn))
     return float(nbDR)/len(dictLearn)*100.
 
-def precisionRecall(dictRef, dictLearn, threshold):
+def precision_recall(dictRef, dictLearn, threshold):
     dr = 0
     D1 = np.array(dictRef)
     M  = D1.shape[0]
@@ -339,7 +339,7 @@ def precisionRecall(dictRef, dictLearn, threshold):
     recall    = float((np.max(corr, axis=1) > threshold).sum()) / float(M)
     return precision*100., recall*100.
 
-def precisionRecallPoints(dictRef, dictLearn):
+def precision_recall_points(dictRef, dictLearn):
     dr = 0
     D1 = np.array(dictRef)
     M  = D1.shape[0]
@@ -352,7 +352,7 @@ def precisionRecallPoints(dictRef, dictLearn):
     recall    = np.max(corr, axis=1)
     return precision, recall
 
-def betaDist(dictRef, dictLearn):
+def beta_dist(dictRef, dictLearn):
     dr = 0
     D1 = np.array(dictRef)
     M  = D1.shape[0]
