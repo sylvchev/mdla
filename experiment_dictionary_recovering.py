@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
 from mdla import multivariate_sparse_encode
-from dict_metrics import hausdorff, emd, detectionRate, betaDist
+from dict_metrics import hausdorff, emd, detection_rate, beta_dist
 from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint, RandomState
@@ -184,10 +184,10 @@ def callback_recovery(loc):
                           'chordal', scale=True))
     d.hfs.append(hausdorff(loc['dictionary'], d.generating_dict, 
                            'fubinistudy', scale=True))
-    d.bd.append(betaDist(d.generating_dict, loc['dictionary']))
-    d.dr99.append(detectionRate(loc['dictionary'],
+    d.bd.append(beta_dist(d.generating_dict, loc['dictionary']))
+    d.dr99.append(detection_rate(loc['dictionary'],
                                 d.generating_dict, 0.99))
-    d.dr97.append(detectionRate(loc['dictionary'],
+    d.dr97.append(detection_rate(loc['dictionary'],
                                 d.generating_dict, 0.97))
 
 rng_global = RandomState(1)

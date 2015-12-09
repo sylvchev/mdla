@@ -3,7 +3,7 @@ from __future__ import print_function
 import numpy as np
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
 from mdla import multivariate_sparse_encode
-from dict_metrics import hausdorff, emd, detectionRate, betaDist
+from dict_metrics import hausdorff, emd, detection_rate, beta_dist
 from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint, RandomState
@@ -200,25 +200,25 @@ def callback_recovery(loc):
     d.wfs.append(emd(loc['dictionary'], d.generating_dict, 
                      'fubinistudy', scale=True))
     d.wcpa.append(emd(loc['dictionary'], d.generating_dict, 
-                     'chordalPA', scale=True))
+                     'chordal_principal_angles', scale=True))
     d.wbc.append(emd(loc['dictionary'], d.generating_dict, 
                      'binetcauchy', scale=True))
     d.wg.append(emd(loc['dictionary'], d.generating_dict, 
                      'geodesic', scale=True))
     d.wfb.append(emd(loc['dictionary'], d.generating_dict, 
-                     'frobeniusBased', scale=True))
+                     'frobenius', scale=True))
     d.hc.append(hausdorff(loc['dictionary'], d.generating_dict, 
                           'chordal', scale=True))
     d.hfs.append(hausdorff(loc['dictionary'], d.generating_dict, 
                            'fubinistudy', scale=True))
     d.hcpa.append(hausdorff(loc['dictionary'], d.generating_dict, 
-                           'chordalPA', scale=True))
+                           'chordal_principal_angles', scale=True))
     d.hbc.append(hausdorff(loc['dictionary'], d.generating_dict, 
                            'binetcauchy', scale=True))
     d.hg.append(hausdorff(loc['dictionary'], d.generating_dict, 
                            'geodesic', scale=True))
     d.hfb.append(hausdorff(loc['dictionary'], d.generating_dict, 
-                           'frobeniusBased', scale=True))
+                           'frobenius', scale=True))
     d.dr99.append(detectionRate(loc['dictionary'],
                                 d.generating_dict, 0.99))
     d.dr97.append(detectionRate(loc['dictionary'],

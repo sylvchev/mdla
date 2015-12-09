@@ -72,9 +72,10 @@ def principal_angles(A, B):
         theta[idxSmall] = thetaSmall
     return theta
 
-def chordalPA(A, B):
+def chordal_principal_angles(A, B):
     '''
-    chordalPA(A, B) Compute the chordal distance based on principal angles
+    chordal_principal_angles(A, B) Compute the chordal distance based on
+    principal angles.
     Compute the chordal distance based on principal angles between A and B
     as d=\sqrt{ \sum_i \sin^2 \theta_i}
     '''
@@ -154,8 +155,8 @@ def hausdorff(D1, D2, gdist, scale=False):
     '''
     if   gdist == "chordal":
         g = chordal
-    elif   gdist == "chordalPA":
-        g = chordalPA
+    elif   gdist == "chordal_principal_angles":
+        g = chordal_principal_angles
     elif gdist == "fubinistudy":
         g = fubini_study
     elif gdist == "binetcauchy":
@@ -204,8 +205,9 @@ def hausdorff(D1, D2, gdist, scale=False):
     d =  max(np.max(np.min(gdm, axis=0)), np.max(np.min(gdm, axis=1)))
     if not scale: return d
     else:
-        if (gdist == "chordal" or gdist == "chordalPA" or gdist == "fubinistudy"
-            or gdist == "binetcauchy" or gdist == "geodesic"):
+        if (gdist == "chordal" or gdist == "chordal_principal_angles" or
+            gdist == "fubinistudy" or gdist == "binetcauchy" or
+            gdist == "geodesic"):
             return d/sqrt(D1[0].shape[0])
         elif gdist == "frobenius":
             return d/sqrt(2.)
@@ -222,8 +224,8 @@ def emd(D1, D2, gdist, scale=False):
     '''
     if gdist == "chordal":
         g = chordal
-    elif gdist == "chordalPA":
-        g = chordalPA
+    elif gdist == "chordal_principal_angles":
+        g = chordal_principal_angles
     elif gdist == "fubinistudy":
         g = fubini_study
     elif gdist == "binetcauchy":
@@ -292,8 +294,9 @@ def emd(D1, D2, gdist, scale=False):
 
     if not scale: return d
     else:
-        if (gdist == "chordal" or gdist == "chordalPA" or gdist == "fubinistudy"
-            or gdist == "binetcauchy" or gdist == "geodesic"):
+        if (gdist == "chordal" or gdist == "chordal_principal_angles" or
+            gdist == "fubinistudy" or gdist == "binetcauchy" or
+            gdist == "geodesic"):
             return d/sqrt(D1[0].shape[0])
         elif gdist == "frobenius":
             return d/sqrt(2.)

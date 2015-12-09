@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from mdla import MiniBatchMultivariateDictLearning
-from dict_metrics import hausdorff, emd, detectionRate
+from dict_metrics import hausdorff, emd
 from numpy.linalg import norm
 from numpy import array, arange, zeros, zeros_like, min, max, int,real, exp, \
 pi, poly, nan_to_num, histogram, hstack
