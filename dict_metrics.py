@@ -41,49 +41,7 @@ def _kernel_registration(this_kernel, dictionary, g):
             m_corr[i, t] = np.trace(this_kernel[t:t+l,:].T.dot(kernel)) / (la.norm(this_kernel[t:t+l,:], 'fro') * la.norm(kernel, 'fro'))
     return m_dist, m_corr
 
-def chordalPA(A, B):
-    '''
-    chordalPA(A, B) Compute the chordal distance based on principal angles
-    Compute the chordal distance based on principal angles between A and B
-    as d=\sqrt{ \sum_i \sin^2 \theta_i}
-    '''
-    return sqrt(np.sum(np.sin(principalAngles(A,B))**2))
-
-def chordal(A, B):
-    '''
-    chordal(A, B) Compute the chordal distance
-    Compute the chordal distance between A and B
-    as d=\sqrt{K - ||\bar{A}^T\bar{B}||_F^2}
-    where K is the rank of A and B, || . ||_F is the Frobenius norm,
-    \bar{A} is the orthogonal basis associated with A and the same goes for B.
-    '''
-    if A.shape != B.shape:
-        raise ValueError('Atoms have not the same dimension (', A.shape, ' and ', B.shape,'). Error raised in chordal(A, B)')
-    
-    # Atoms should have more lines than columns
-    # if (A.shape[1] > A.shape[0]):
-    #     A = A.T
-    #     B = B.T
-    if np.allclose(A, B): return 0.
-    # else: return np.sqrt(A.T.shape[1] - la.norm(sl.orth(A.T).T.dot(sl.orth(B.T)), 'fro')**2)
-    else: 
-        d2 = A.shape[1] - la.norm(sl.orth(A).T.dot(sl.orth(B)), 'fro')**2
-        if d2 < 0.: return sqrt(abs(d2))
-        else: return sqrt(d2)
-    # return np.sqrt(A.shape[0] - la.norm(sl.orth(A).T.dot(sl.orth(B)), 'fro')**2)
-        
-def fubiniStudy(A, B):
-    '''
-    fubiniStudy(A, B) Compute the Fubini-Study distance
-    Compute the Fubini-Study distance based on principal angles between A and B
-    as d=\acos{ \prod_i \theta_i}
-    '''
-    if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in fubiniStudy(A, B)')
-    if np.allclose(A, B): return 0.
-    return arccos(la.det(sl.orth(A).T.dot(sl.orth(B))))
-
-def principalAngles(A, B):
+def principal_angles(A, B):
     '''Compute the principal angles between subspaces A and B.
 
     The algorithm for computing the principal angles is described in :
@@ -114,12 +72,48 @@ def principalAngles(A, B):
         theta[idxSmall] = thetaSmall
     return theta
 
+def chordalPA(A, B):
+    '''
+    chordalPA(A, B) Compute the chordal distance based on principal angles
+    Compute the chordal distance based on principal angles between A and B
+    as d=\sqrt{ \sum_i \sin^2 \theta_i}
+    '''
+    return sqrt(np.sum(np.sin(principal_angles(A,B))**2))
+
+def chordal(A, B):
+    '''
+    chordal(A, B) Compute the chordal distance
+    Compute the chordal distance between A and B
+    as d=\sqrt{K - ||\bar{A}^T\bar{B}||_F^2}
+    where K is the rank of A and B, || . ||_F is the Frobenius norm,
+    \bar{A} is the orthogonal basis associated with A and the same goes for B.
+    '''
+    if A.shape != B.shape:
+        raise ValueError('Atoms have not the same dimension (', A.shape, ' and ', B.shape,'). Error raised in chordal(A, B)')
+    
+    if np.allclose(A, B): return 0.
+    else: 
+        d2 = A.shape[1] - la.norm(sl.orth(A).T.dot(sl.orth(B)), 'fro')**2
+        if d2 < 0.: return sqrt(abs(d2))
+        else: return sqrt(d2)
+        
+def fubiniStudy(A, B):
+    '''
+    fubiniStudy(A, B) Compute the Fubini-Study distance
+    Compute the Fubini-Study distance based on principal angles between A and B
+    as d=\acos{ \prod_i \theta_i}
+    '''
+    if A.shape != B.shape:
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in fubiniStudy(A, B)')
+    if np.allclose(A, B): return 0.
+    return arccos(la.det(sl.orth(A).T.dot(sl.orth(B))))
+
 def binetCauchy(A, B):
     '''Compute the Binet-Cauchy distance
     Compute the Binet-Cauchy distance based on principal angles between A
     and B with d=\sqrt{ 1 - \prod_i \cos^2 \theta_i}
     '''    
-    theta = principalAngles(A, B)
+    theta = principal_angles(A, B)
     return sqrt(1. - np.prod(np.cos(theta)**2))
 
 def geodesic(A, B):
@@ -128,12 +122,12 @@ def geodesic(A, B):
     Compute the arc length or geodesic distance based on principal angles between A
     and B with d=\sqrt{ \sum_i \theta_i^2}
     '''
-    theta = principalAngles(A, B)
+    theta = principal_angles(A, B)
     return la.norm(theta)
 
-def frobeniusBased(A, B):
+def frobenius_based(A, B):
     if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobeniusBased(A, B)')
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobenius_based(A, B)')
     return la.norm(np.abs(A)-np.abs(B), 'fro')
 
 def absEuclidean(A, B):
@@ -155,7 +149,7 @@ def hausdorff(D1, D2, gdist, scale=False):
     Compute the Hausdorff distance between two sets of elements, here
     dictionary atoms, using a ground distance.
     Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
-    or "frobeniusBased".
+    or "frobenius".
     The scale parameter changes the return value to be between 0 and 1.
     '''
     if   gdist == "chordal":
@@ -168,8 +162,8 @@ def hausdorff(D1, D2, gdist, scale=False):
         g = binetCauchy
     elif gdist == "geodesic":
         g = geodesic
-    elif gdist == "frobeniusBased":
-        g = frobeniusBased
+    elif gdist == "frobenius":
+        g = frobenius_based
     elif gdist == "absEuclidean":
         g = absEuclidean
     elif gdist == "euclidean":
@@ -213,7 +207,7 @@ def hausdorff(D1, D2, gdist, scale=False):
         if (gdist == "chordal" or gdist == "chordalPA" or gdist == "fubinistudy"
             or gdist == "binetcauchy" or gdist == "geodesic"):
             return d/sqrt(D1[0].shape[0])
-        elif gdist == "frobeniusBased":
+        elif gdist == "frobenius":
             return d/sqrt(2.)
         else:
             return d
@@ -223,7 +217,7 @@ def emd(D1, D2, gdist, scale=False):
     Compute the Earth Mover's Distance (EMD) between two sets of elements,
     here dictionary atoms, using a ground distance.
     Possible choice are "chordal", "fubinistudy", "binetcauchy", "geodesic"
-    or "frobeniusBased".
+    or "frobenius".
     The scale parameter changes the return value to be between 0 and 1.
     '''
     if gdist == "chordal":
@@ -236,8 +230,8 @@ def emd(D1, D2, gdist, scale=False):
         g = binetCauchy
     elif gdist == "geodesic":
         g = geodesic
-    elif gdist == "frobeniusBased":
-        g = frobeniusBased
+    elif gdist == "frobenius":
+        g = frobenius_based
     elif gdist == "absEuclidean":
         g = absEuclidean
     elif gdist == "euclidean":
@@ -301,7 +295,7 @@ def emd(D1, D2, gdist, scale=False):
         if (gdist == "chordal" or gdist == "chordalPA" or gdist == "fubinistudy"
             or gdist == "binetcauchy" or gdist == "geodesic"):
             return d/sqrt(D1[0].shape[0])
-        elif gdist == "frobeniusBased":
+        elif gdist == "frobenius":
             return d/sqrt(2.)
         else:
             return d
