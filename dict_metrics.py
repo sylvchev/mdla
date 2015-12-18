@@ -304,6 +304,11 @@ def emd(D1, D2, gdist, scale=False):
             return d
 
 def compute_correlation(s, D):
+    """Compute correlation between multivariate atoms
+
+    Compute the correlation between a multivariate atome s and dictionary D
+    as the sum of the correlation in each n_dims dimensions.
+    """
     corr = np.zeros((len(D), s.shape[1]))
     for i in range(len(D)): # for all atoms
         corrTmp = 0
@@ -312,58 +317,90 @@ def compute_correlation(s, D):
         corr[i,:len(corrTmp)] = corrTmp
     return corr
 
-def detection_rate(dictRef, dictLearn, threshold):
-    nbDR = 0
-    corr = np.zeros((len(dictRef), len(dictLearn)))
-    for i in range(len(dictRef)):
-        corrTmp = compute_correlation(np.hstack((np.zeros((dictRef[0].shape[0],5)), dictRef[i], np.zeros((dictRef[0].shape[0],5)))), dictLearn)
-        for j in range(len(dictLearn)):
-            idxMax = np.argmax(np.abs(corrTmp[j,:]))
-            corr[i,j] = corrTmp[j,idxMax]
-    corrLocal = np.abs(corr.copy())
-    for i in range(len(dictRef)):
-        maxCorr = corrLocal.max()
-        if maxCorr >= threshold: nbDR+=1
-        idxMax = np.unravel_index(corrLocal.argmax(), corrLocal.shape)
-        corrLocal[:,idxMax[1]] = np.zeros(len(dictRef))
-        corrLocal[idxMax[0],:] = np.zeros(len(dictLearn))
-    return float(nbDR)/len(dictLearn)*100.
+def detection_rate(ref, recov, threshold):
+    """Compute the detection rate between reference and recovered dictionaries
 
-def precision_recall(dictRef, dictLearn, threshold):
+    The reference ref and the recovered recov are univariate or multivariate
+    dictionaries. An atom a of the ref dictionary is considered as recovered if
+    $c < threshold$ with $c = argmax_{r \in R} |<a, r>|$, that is the absolute
+    value of the maximum correlation between a and any atom r of the recovered
+    dictionary R is above a given threshold.
+    The process is iterative and an atom r could be matched only once with an
+    atom a of the reference dictionary. In other word, each atom a is matched
+    with a different atom r.
+    """
     dr = 0
-    D1 = np.array(dictRef)
+    corr = np.zeros((len(ref), len(recov)))
+    for i in range(len(ref)):
+        c_tmp = compute_correlation(np.hstack((np.zeros((ref[0].shape[0],5)),
+                                               ref[i],
+                                               np.zeros((ref[0].shape[0],5)))),
+                                    recov)
+        for j in range(len(recov)):
+            idx_max = np.argmax(np.abs(c_tmp[j,:]))
+            corr[i,j] = c_tmp[j, idx_max]
+    c_local = np.abs(corr.copy())
+    for i in range(len(ref)):
+        max_corr = c_local.max()
+        if max_corr >= threshold: dr+=1
+        idx_max = np.unravel_index(c_local.argmax(), c_local.shape)
+        c_local[:,idx_max[1]] = np.zeros(len(ref))
+        c_local[idx_max[0],:] = np.zeros(len(recov))
+    return float(dr)/len(recov)*100.
+
+def precision_recall(ref, recov, threshold):
+    """Compute precision and recall for recovery experiment
+    """
+    dr = 0
+    D1 = np.array(ref)
     M  = D1.shape[0]
     N  = D1.shape[2]
     D1 = D1.reshape((M, N))
-    D2 = np.array(dictLearn)
+    D2 = np.array(recov)
     D2 = D2.reshape((M, N))
     corr = D1.dot(D2.T)
     precision = float((np.max(corr, axis=0) > threshold).sum()) / float(M)
-    recall    = float((np.max(corr, axis=1) > threshold).sum()) / float(M)
+    recall = float((np.max(corr, axis=1) > threshold).sum()) / float(M)
     return precision*100., recall*100.
 
-def precision_recall_points(dictRef, dictLearn):
+def precision_recall_points(ref, recov):
+    """Compute the precision and recall for each atom in a recovery experiment
+    """
     dr = 0
-    D1 = np.array(dictRef)
-    M  = D1.shape[0]
-    N  = D1.shape[2]
+    D1 = np.array(ref)
+    M = D1.shape[0]
+    N = D1.shape[2]
     D1 = D1.reshape((M, N))
-    D2 = np.array(dictLearn)
+    D2 = np.array(recov)
     D2 = D2.reshape((M, N))
     corr = D1.dot(D2.T)
     precision = np.max(corr, axis=0)
-    recall    = np.max(corr, axis=1)
+    recall = np.max(corr, axis=1)
     return precision, recall
 
-def beta_dist(dictRef, dictLearn):
+def beta_dist(D1, D2):
+    """Compute the Beta-distance proposed by Skretting and Engan
+
+    The beta-distance is:
+    $\beta(D1, D2)=1/(M1+M2)(\sum_j \beta(D1, d^2_j)+\sum_j \beta(D2, d^1_j))$
+    with $\beta(D, x) = arccos(\max_i |d^T_i x|/||x||)$
+    as proposed in:
+    Karl Skretting and Kjersti Engan,
+    Learned dictionaries for sparse image representation: properties and results,
+    SPIE, 2011.
+    """
+    if D1.shape[1] != D2.shape[1]:
+        raise  ValueError('Dictionaries have different dim (', D1.shape, ' and ', D2.shape,'). Error raised in beta_dist(D1, D2)')
     dr = 0
-    D1 = np.array(dictRef)
-    M  = D1.shape[0]
-    N  = D1.shape[1]
-    D1 = D1.reshape((M, N))
-    D2 = np.array(dictLearn)
-    D2 = D2.reshape((M, N))
+    D1 = np.array(D1)
+    M1 = D1.shape[0]
+    N = D1.shape[1]
+    D1 = D1.reshape((M1, N))
+    D2 = np.array(D2)
+    M2 = D2.shape[0]
+    D2 = D2.reshape((M2, N))
     corr = D1.dot(D2.T)
-    return (np.sum(np.arccos(np.max(corr, axis=0))) + np.sum(np.arccos(np.max(corr, axis=1)))) / (2*M)
+    return (np.sum(np.arccos(np.max(corr, axis=0))) +
+            np.sum(np.arccos(np.max(corr, axis=1)))) / (M1+M2)
 
 
