@@ -58,6 +58,7 @@ def read_BCI_signals():
         with open(fn,'r') as f:
             o = pickle.load(f)
             signals = o['signals']
+            classes = o['classes']
         print ('Previous preprocessing of BCI dataset found, reusing it')
     else:    
         for item in lkp:
@@ -107,31 +108,31 @@ def read_BCI_signals():
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
-                    classes.append('LeftHand')
+                    classes.append('1') # LeftHand
                 ev = EVENTPOS[EVENTTYP==RightHand] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
-                    classes.append('RightHand')
+                    classes.append('2') # RightHand
                 ev = EVENTPOS[EVENTTYP==Foot] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
-                    classes.append('Foot')
+                    classes.append('3') # Foot
                 ev = EVENTPOS[EVENTTYP==Tongue] 
                 for i, t in enumerate(ev):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     # center the data
                     signals.append((tmpfs-tmpfs.mean(axis=0)))
                     sujets.append(item[2:3])
-                    classes.append('Tongue')
+                    classes.append('4') # Tongue
                 
     with open(fn, 'w+') as f:
-        o = {'signals':signals}
+        o = {'signals':signals, 'classes':classes}
         pickle.dump(o,f)
     return signals
 
