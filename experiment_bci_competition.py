@@ -62,16 +62,13 @@ def read_BCI_signals():
         print ('Previous preprocessing of BCI dataset found, reusing it')
     else:    
         for item in lkp:
-            # on prend tous les training, il faut utiliser les labels pour E.
             if item[-8:] == '-EOG.mat':
                 o = loadmat (kppath+item, struct_as_record=True)
                 s = nan_to_num(o['s'])
                 sample_rate = o['SampleRate']    
                 event_type = o['EVENTTYP']
                 event_pos = o['EVENTPOS']
-                
-                # Label = o['Label']
-                Classlabel = o['Classlabel']
+                class_label = o['Classlabel']
                 if preprocessing:
                     # Use a Notch filter to remove 50Hz power line
                     fs = sample_rate[0,0]  #sampling rate
@@ -108,16 +105,8 @@ def read_BCI_signals():
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     signals.append((tmpfs-tmpfs.mean(axis=0))) # center data
                     sujets.append(item[2:3])
-                    classes.append(ClassLabels[i])
-                    
-                # ev = EVENTPOS[EVENTTYP==LeftHand] 
-                # for i, t in enumerate(ev):
-                #     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
-                #     # center the data
-                #     signals.append((tmpfs-tmpfs.mean(axis=0)))
-                #     sujets.append(item[2:3])
-                #     classes.append('1') # LeftHand
-                
+                    classes.append(class_labels[i])
+                                    
     with open(fn, 'w+') as f:
         o = {'signals':signals, 'classes':classes}
         pickle.dump(o,f)
