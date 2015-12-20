@@ -63,18 +63,18 @@ def read_BCI_signals():
     else:    
         for item in lkp:
             # on prend tous les training, il faut utiliser les labels pour E.
-            if item[-9:] == 'T-EOG.mat':
+            if item[-8:] == '-EOG.mat':
                 o = loadmat (kppath+item, struct_as_record=True)
                 s = nan_to_num(o['s'])
-                SampleRate = o['SampleRate']    
-                EVENTTYP = o['EVENTTYP']
-                EVENTPOS = o['EVENTPOS']
-                EVENTDUR = o['EVENTDUR']
+                sample_rate = o['SampleRate']    
+                event_type = o['EVENTTYP']
+                event_pos = o['EVENTPOS']
+                
                 # Label = o['Label']
-                # Classlabel = o['Classlabel']
+                Classlabel = o['Classlabel']
                 if preprocessing:
                     # Use a Notch filter to remove 50Hz power line
-                    fs = SampleRate[0,0]  #sampling rate
+                    fs = sample_rate[0,0]  #sampling rate
                     Wn = f0/(fs/2.)       #ratio of notch freq. to Nyquist freq.
                     # notchWidth = 0.1      #width of the notch
                     [b, a] = notch(Wn, notchWidth)
@@ -83,7 +83,7 @@ def read_BCI_signals():
                         ns[:,e] = filtfilt(b, a, s[:,e])
                 
                     # Apply a bandpass filter
-                    fs = SampleRate[0,0]  #sampling rate
+                    fs = sample_rate[0,0]  #sampling rate
                     [b, a] = butter(order, fc/(fs/2.), 'bandpass')
                     fs = zeros_like(s)
                     for e in range(s.shape[1]):
@@ -93,48 +93,35 @@ def read_BCI_signals():
                     if decimation:
                         dfs = decimate(fs, int(dfactor), axis=0)
                     
-                # Choose the class to process
-                LeftHand  = 769
-                RightHand = 770
-                Foot      = 771
-                Tongue    = 772
-                start = 1*SampleRate[0,0]/dfactor
-                stop  = 4*SampleRate[0,0]/dfactor
+                # Event Type
+                lefthand = 769 # class 1
+                righthand = 770 # class 2
+                foot = 771 # class 3
+                tongue = 772 # class 4
+                trial_begin = 768
+                
+                start = 3*sample_rate[0,0]/dfactor # 2s fixation, 1s after cue
+                stop  = 6*sample_rate[0,0]/dfactor # 4s after cue, 3s of EEG
 
-                # ev = np.concatenate((EVENTPOS[EVENTTYP==LeftHand], EVENTPOS[EVENTTYP==RightHand]))
-                ev = EVENTPOS[EVENTTYP==LeftHand] 
-                for i, t in enumerate(ev):
+                trials = event_pos[event_type == trial_begin] 
+                for i, t in enumerate(trials):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
-                    # center the data
-                    signals.append((tmpfs-tmpfs.mean(axis=0)))
+                    signals.append((tmpfs-tmpfs.mean(axis=0))) # center data
                     sujets.append(item[2:3])
-                    classes.append('1') # LeftHand
-                ev = EVENTPOS[EVENTTYP==RightHand] 
-                for i, t in enumerate(ev):
-                    tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
-                    # center the data
-                    signals.append((tmpfs-tmpfs.mean(axis=0)))
-                    sujets.append(item[2:3])
-                    classes.append('2') # RightHand
-                ev = EVENTPOS[EVENTTYP==Foot] 
-                for i, t in enumerate(ev):
-                    tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
-                    # center the data
-                    signals.append((tmpfs-tmpfs.mean(axis=0)))
-                    sujets.append(item[2:3])
-                    classes.append('3') # Foot
-                ev = EVENTPOS[EVENTTYP==Tongue] 
-                for i, t in enumerate(ev):
-                    tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
-                    # center the data
-                    signals.append((tmpfs-tmpfs.mean(axis=0)))
-                    sujets.append(item[2:3])
-                    classes.append('4') # Tongue
+                    classes.append(ClassLabels[i])
+                    
+                # ev = EVENTPOS[EVENTTYP==LeftHand] 
+                # for i, t in enumerate(ev):
+                #     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
+                #     # center the data
+                #     signals.append((tmpfs-tmpfs.mean(axis=0)))
+                #     sujets.append(item[2:3])
+                #     classes.append('1') # LeftHand
                 
     with open(fn, 'w+') as f:
         o = {'signals':signals, 'classes':classes}
         pickle.dump(o,f)
-    return signals
+    return signals, classes
 
 def saveKernelPlot(kernels, n_kernels, col = 5, row = -1, order=None, figname = 'allkernels', label=None):
     n_display = idx = 0
@@ -170,7 +157,6 @@ def saveKernelPlot(kernels, n_kernels, col = 5, row = -1, order=None, figname = 
         idx += n_display
         plt.tight_layout(.5)
         plt.savefig(figname+'-part'+str(j)+'.png')
-
 
 X = read_BCI_signals()
 X_half1 = array([x[0::2,:] for x in X])
