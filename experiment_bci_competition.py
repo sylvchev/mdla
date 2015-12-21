@@ -146,14 +146,12 @@ def saveKernelPlot(kernels, n_kernels, col = 5, row = -1, order=None, figname = 
         plt.savefig(figname+'-part'+str(j)+'.png')
 
 X = read_BCI_signals()
-X_half1 = array([x[0::2,:] for x in X])
-X_half2 = array([x[1::2,:] for x in X])
 
 rng_global = RandomState(1)
-n_samples = len(X_half1)
-n_dims = X_half1[0].shape[0] # half of the 22 electrodes
-n_features = X_half1[0].shape[1] # 375, 3s of decimated signal at 125Hz
-kernel_init_len = 50 # kernel size is 60
+n_samples = len(X)
+n_dims = X[0].shape[0] # 22 electrodes
+n_features = X[0].shape[1] # 375, 3s of decimated signal at 125Hz
+kernel_init_len = 50 # kernel size is 50
 n_kernels = 60 
 n_nonzero_coefs = 1
 learning_rate = 5.0
@@ -161,58 +159,26 @@ n_iter = 100
 n_jobs, batch_size = -1, None # n_cpu, 5*n_cpu
 figname="-60ker-K1-klen50-lr5.0-emm-all"
 
-d1 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
+d = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 batch_size=batch_size, n_iter=n_iter,
                 n_nonzero_coefs=n_nonzero_coefs, 
                 n_jobs=n_jobs, learning_rate=learning_rate,
                 kernel_init_len=kernel_init_len, verbose=1,
                 random_state=rng_global)
-d1 = d1.fit(X_half1)
-
-d2 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
-                batch_size=batch_size, n_iter=n_iter,
-                n_nonzero_coefs=n_nonzero_coefs, 
-                n_jobs=n_jobs, learning_rate=learning_rate,
-                kernel_init_len=kernel_init_len, verbose=1,
-                random_state=rng_global)
-d2 = d2.fit(X_half2)
-
-d3 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
-                batch_size=batch_size, n_iter=n_iter,
-                n_nonzero_coefs=n_nonzero_coefs, 
-                n_jobs=n_jobs, learning_rate=learning_rate,
-                kernel_init_len=kernel_init_len, verbose=1,
-                random_state=rng_global)
-d3 = d3.fit(array(X))
+d = d.fit(X)
 
 fig = plt.figure()
 objf = fig.add_suplot(1, 1, 1)
-ofun = objf.boxplot(d1.error_)
+ofun = objf.boxplot(d.error_)
 medianof = [median.get_ydata()[0]
             for n, median in enumerate(ofun['medians'])]
 axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
-plt.savefig('EEG-decomposition-error-half1'+figname+'.png')
-
-fig = plt.figure()
-objf = fig.add_suplot(1, 1, 1)
-ofun = objf.boxplot(d2.error_)
-medianof = [median.get_ydata()[0]
-            for n, median in enumerate(ofun['medians'])]
-axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
-plt.savefig('EEG-decomposition-error-half2'+figname+'.png')
-
-fig = plt.figure()
-objf = fig.add_suplot(1, 1, 1)
-ofun = objf.boxplot(d2.error_)
-medianof = [median.get_ydata()[0]
-            for n, median in enumerate(ofun['medians'])]
-axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
-plt.savefig('EEG-decomposition-error-full'+figname+'.png')
+plt.savefig('EEG-decomposition-error'+figname+'.png')
 
 from mdla import multivariate_sparse_encode
 from collections import Counter
 n_jobs = 4
-r, code = multivariate_sparse_encode(X_half1, d1.kernels_,
+r, code = multivariate_sparse_encode(X, d.kernels_,
                                      n_nonzero_coefs=n_nonzero_coefs,
                                      n_jobs=n_jobs, verbose=2)
 
@@ -220,80 +186,19 @@ decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
 decomposition_weight.sort()
 weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
 order = weight.argsort()
-saveKernelPlot(d1.kernels_, d1.n_kernels, order=order, label=weight, figname='EEG-kernels-half1'+figname, row=6)
+saveKernelPlot(d.kernels_, d.n_kernels, order=order, label=weight,
+               figname='EEG-kernels'+figname, row=6)
 
 correlation = Counter(decomposition_weight).items()
 correlation.sort(key=lambda x: x[1])
 labels, values = zip(*correlation)
 indexes = arange(len(correlation))
-
 plt.figure()
 width = 1
 plt.bar(indexes, values, width, linewidth=0)
-plt.savefig('EEG-coeff_hist_sorted-half1'+figname+'.png')
+plt.savefig('EEG-coeff_hist_sorted'+figname+'.png')
 
-r, code = multivariate_sparse_encode(X_half2, d2.kernels_,
-                                     n_nonzero_coefs=n_nonzero_coefs,
-                                     n_jobs=n_jobs, verbose=2)
-
-decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
-decomposition_weight.sort()
-weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
-order = weight.argsort()
-saveKernelPlot(d2.kernels_, d2.n_kernels, order=order, label=weight, figname='EEG-kernels-half2'+figname, row=6)
-
-correlation = Counter(decomposition_weight).items()
-correlation.sort(key=lambda x: x[1])
-labels, values = zip(*correlation)
-indexes = arange(len(correlation))
-
-plt.figure()
-width = 1
-plt.bar(indexes, values, width, linewidth=0)
-plt.savefig('EEG-coeff_hist_sorted-half2'+figname+'.png')
-
-r, code = multivariate_sparse_encode(array(X), d3.kernels_,
-                                     n_nonzero_coefs=n_nonzero_coefs,
-                                     n_jobs=n_jobs, verbose=2)
-
-decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
-decomposition_weight.sort()
-weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
-order = weight.argsort()
-saveKernelPlot(d3.kernels_, d3.n_kernels, order=order, label=weight, figname='EEG-kernels-full'+figname, row=6)
-
-correlation = Counter(decomposition_weight).items()
-correlation.sort(key=lambda x: x[1])
-labels, values = zip(*correlation)
-indexes = arange(len(correlation))
-
-plt.figure()
-width = 1
-plt.bar(indexes, values, width, linewidth=0)
-plt.savefig('EEG-coeff_hist_sorted-full'+figname+'.png')
-
-
-with open('EEG-savedico-half1'+figname+'.pkl', 'w+') as f:
-    o = {'kernels':d1.kernels_, 'error':d1.error_, 'kernel_init_len':d1.kernel_init_len, 'learning_rate':d1.learning_rate, 'n_iter':d1.n_iter, 'n_jobs':d1.n_jobs, 'n_kernels':d1.n_kernels, 'n_nonzero_coefs':d1.n_nonzero_coefs}
+with open('EEG-savedico'+figname+'.pkl', 'w+') as f:
+    o = {'kernels':d.kernels_, 'error':d.error_, 'kernel_init_len':d.kernel_init_len, 'learning_rate':d.learning_rate, 'n_iter':d.n_iter, 'n_jobs':d.n_jobs, 'n_kernels':d.n_kernels, 'n_nonzero_coefs':d.n_nonzero_coefs}
     pickle.dump(o,f)
-
-with open('EEG-savedico-half2'+figname+'.pkl', 'w+') as f:
-    o = {'kernels':d2.kernels_, 'error':d2.error_, 'kernel_init_len':d2.kernel_init_len, 'learning_rate':d2.learning_rate, 'n_iter':d2.n_iter, 'n_jobs':d2.n_jobs, 'n_kernels':d2.n_kernels, 'n_nonzero_coefs':d2.n_nonzero_coefs}
-    pickle.dump(o,f)
-
-with open('EEG-savedico-full'+figname+'.pkl', 'w+') as f:
-    o = {'kernels':d3.kernels_, 'error':d3.error_, 'kernel_init_len':d3.kernel_init_len, 'learning_rate':d3.learning_rate, 'n_iter':d3.n_iter, 'n_jobs':d3.n_jobs, 'n_kernels':d3.n_kernels, 'n_nonzero_coefs':d3.n_nonzero_coefs}
-    pickle.dump(o,f)
-
-print ("Computing distances")
-print ("Wasserstein chordal distance half1-2 is", emd(d1.kernels_, d2.kernels_, 'chordal', scale=True))
-print ("Wasserstein Fubini-Study half1-2 is", emd(d1.kernels_, d2.kernels_, 'fubinistudy', scale=True))
-print ("Wasserstein chordal distance full-half1 is", emd(d3.kernels_, d1.kernels_, 'chordal', scale=True))
-print ("Wasserstein chordal distance full-half1 is", emd(d3.kernels_, d1.kernels_, 'fubinistudy', scale=True))
-print ("Wasserstein chordal distance full-half2 is", emd(d3.kernels_, d2.kernels_, 'chordal', scale=True))
-print ("Wasserstein chordal distance full-half2 is", emd(d3.kernels_, d2.kernels_, 'fubinistudy', scale=True))
-
-# 90ker-K6-klen60-lr5.0
-# Wasserstein chordal distance is 0.636417242678
-# Wasserstein Fubini-Study is 0.679802451865
 
