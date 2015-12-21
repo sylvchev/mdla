@@ -60,7 +60,13 @@ def read_BCI_signals():
             signals = o['signals']
             classes = o['classes']
         print ('Previous preprocessing of BCI dataset found, reusing it')
-    else:    
+    else:
+        if preprocessing:
+            fs = sample_rate[0,0]  #sampling rate
+            Wn = f0/(fs/2.)       #ratio of notch freq. to Nyquist freq.
+            [bn, an] = notch(Wn, notchWidth)
+            fs = sample_rate[0,0]  #sampling rate
+            [bb, ab] = butter(order, fc/(fs/2.), 'bandpass')
         for item in lkp:
             if item[-8:] == '-EOG.mat':
                 o = loadmat (kppath+item, struct_as_record=True)
@@ -71,30 +77,22 @@ def read_BCI_signals():
                 class_label = o['Classlabel']
                 if preprocessing:
                     # Use a Notch filter to remove 50Hz power line
-                    fs = sample_rate[0,0]  #sampling rate
-                    Wn = f0/(fs/2.)       #ratio of notch freq. to Nyquist freq.
-                    # notchWidth = 0.1      #width of the notch
-                    [b, a] = notch(Wn, notchWidth)
                     ns = zeros_like(s)
                     for e in range(s.shape[1]):
-                        ns[:,e] = filtfilt(b, a, s[:,e])
-                
+                        ns[:,e] = filtfilt(bn, an, s[:,e])
                     # Apply a bandpass filter
-                    fs = sample_rate[0,0]  #sampling rate
-                    [b, a] = butter(order, fc/(fs/2.), 'bandpass')
                     fs = zeros_like(s)
                     for e in range(s.shape[1]):
-                        fs[:,e] = filtfilt(real(b), real(a), ns[:,e])
-
+                        fs[:,e] = filtfilt(real(bb), real(ab), ns[:,e])
                     # decimate the signal
                     if decimation:
                         dfs = decimate(fs, int(dfactor), axis=0)
                     
                 # Event Type
-                lefthand = 769 # class 1
+                lefthand = 769  # class 1
                 righthand = 770 # class 2
-                foot = 771 # class 3
-                tongue = 772 # class 4
+                foot = 771      # class 3
+                tongue = 772    # class 4
                 trial_begin = 768
                 
                 start = 3*sample_rate[0,0]/dfactor # 2s fixation, 1s after cue
