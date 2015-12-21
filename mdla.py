@@ -23,7 +23,8 @@ from sklearn.utils.fixes import safe_copy
 
 # TODO:
 # - speed up by grouping decomposition+update as in pydico.
-# - adding extension for shift invariant dico      
+# - adding extension for shift invariant dico
+
 
 def _shift_and_extend(signal, extended_length, shift_offset):
     '''_shift_and_extend put a copy of signal in a new container of size
@@ -33,15 +34,17 @@ def _shift_and_extend(signal, extended_length, shift_offset):
     extended_signal[shift_offset:shift_offset+signal.shape[0], :] = signal
     return extended_signal
 
+
 def _normalize(dictionary):
     '''Normalize all dictionary elements to have a unit norm'''
     for i in range(len(dictionary)):
         dictionary[i] /= np.linalg.norm(dictionary[i], 'fro')
     return dictionary
 
+
 def _get_learning_rate(iteration, max_iteration, learning_rate):
-    #TODO: change to have last_iterations=max_iterations
-    #TODO: verify that max_iter=1 is not a problem for partial_fit
+    # TODO: change to have last_iterations=max_iterations
+    # TODO: verify that max_iter=1 is not a problem for partial_fit
     if learning_rate == 0.:
         return 0.
     last_iterations = np.floor(max_iteration*2./3.)
@@ -49,14 +52,15 @@ def _get_learning_rate(iteration, max_iteration, learning_rate):
         return last_iterations**learning_rate
     else:
         return (iteration+1)**learning_rate
-    
+
+
 def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
-                                verbose=False):
+                      verbose=False):
     """Sparse coding multivariate signal with OMP
 
     Returns residual and a decomposition array (n_nonzero_coefs, 3),
     each line indicating (amplitude, offset, kernel).
-    
+
     Parameters
     ----------
     signal: array of shape (n_features, n_dims)
