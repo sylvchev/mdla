@@ -7,9 +7,8 @@ import sys
 import itertools
 
 import numpy as np
-from math import floor, ceil
+from math import floor
 from time import time
-from numpy.lib.stride_tricks import as_strided
 from matplotlib.mlab import find
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -351,10 +350,8 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     n_samples, n_features, n_dims = X.shape
     if isinstance(dictionary, MultivariateDictLearning) or \
        isinstance(dictionary, MiniBatchMultivariateDictLearning):
-       n_kernels = dictionary.n_kernels
        kernels = dictionary.kernels_
     else:
-       n_kernels = len(dictionary)
        kernels = dictionary
 
     if n_nonzero_coefs is None:
@@ -420,7 +417,6 @@ def reconstruct_from_code(code, dictionary, n_features):
         (n_features, n_dims) with n_features >= n_dims.
     """
     n_dims = dictionary[0].shape[1]
-    n_kernels = len(dictionary)
     n_samples = len(code)
     signal = list()
     for i in range(n_samples):
