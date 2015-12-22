@@ -68,7 +68,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
         Each sample is a matrix of shape (n_features, n_dims) with
         n_features >= n_dims.
 
-    dictionary: list of arrays 
+    dictionary: list of arrays
         The dictionary against which to solve the sparse coding of
         the data. The dictionary learned is a list of n_kernels
         elements. Each element is a convolution kernel, i.e. an
@@ -78,7 +78,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
     n_nonzero_coefs : int
         Sparsity controller parameter for multivariate variant
         of OMP
-                
+
     verbose:
         Degree of output the procedure will print.
 
@@ -86,7 +86,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
     -------
     residual: array of (n_features, n_dims)
         Reconstruction error residual. 
-    
+
     decomposition: array of shape (n_nonzero_coefs, 3)
         The sparse code decomposition : (amplitude, offset, kernel)
         for each n_nonzero_coefs.
@@ -131,7 +131,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
                                       n_features, k_off)
 
     if verbose >= 3:
-        print ('[M-OMP # 0 ] kernel', k_selected, 'is selected with amplitude', k_amplitude)
+        print ('[M-OMP # 0 ] kernel', k_selected,
+               'is selected with amplitude', k_amplitude)
     if verbose >= 4:
         print (selected_atom)
         
@@ -167,7 +168,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
                                      'valid')
             correlation_score[i, :len(corr)] = corr
         if verbose >= 4:
-            print ('[M-OMP #', atoms_in_estimate, '] correlation is', correlation_score)
+            print ('[M-OMP #', atoms_in_estimate, '] correlation is',
+                   correlation_score)
         (k_selected, k_off) = np.unravel_index(
             np.argmax(np.abs(correlation_score)),
             correlation_score.shape)
@@ -216,7 +218,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             k_kernel = int(decomposition[i, 2])
             k_len = dictionary[k_kernel].shape[0]
             
-            estimated_signal[k_off:k_off+k_len, :] += (k_amp * dictionary[k_kernel])
+            estimated_signal[k_off:k_off+k_len, :] += (k_amp *
+                                                       dictionary[k_kernel])
         residual = signal - estimated_signal
 
         if verbose >= 3:
@@ -224,7 +227,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             print ('[M-OMP #', atoms_in_estimate-1, '] signal energy is',
                    signal_energy, 'and residual energy is', residual_energy)
         if verbose >= 4:
-            print ('[M-OMP #', atoms_in_estimate-1, ']: partial decomposition',
+            print ('[M-OMP #', atoms_in_estimate-1, ']: partial decomposition', 
                    'is', decomposition[:atoms_in_estimate,:])
         
     # End big loop
