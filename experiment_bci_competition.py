@@ -3,7 +3,6 @@ from __future__ import print_function
 
 import pickle
 import numpy as np
-import matplotlib.pyplot as plt
 from mdla import MiniBatchMultivariateDictLearning
 from dict_metrics import hausdorff, emd
 from numpy.linalg import norm
@@ -12,6 +11,7 @@ pi, poly, nan_to_num, histogram, hstack
 from numpy.random import rand, randn, permutation, randint, RandomState
 from scipy.signal import filtfilt, butter, decimate
 from scipy.io import loadmat
+from plot_bci_dict import plot_objective_func, plot_atom_usage
 from os import listdir
 from os.path import exists
 
@@ -110,40 +110,6 @@ def read_BCI_signals():
         pickle.dump(o,f)
     return signals, classes
 
-def saveKernelPlot(kernels, n_kernels, col = 5, row = -1, order=None, figname = 'allkernels', label=None):
-    n_display = idx = 0
-    if n_kernels == row*col:
-        pass
-    elif row == -1:
-        row = n_kernels / int(col)
-        if n_kernels % int(col) != 0:
-            row += 1
-    elif col == -1:
-        col = n_kernels / int(row)
-        if n_kernels % int(row) != 0:
-            col += 1
-    n_display = row*col
-    n_figure = n_kernels / int(n_display)
-    if n_kernels % int(n_display) != 0:
-        n_figure += 1
-    if order == None:
-        order = range(n_kernels)
-    if label == None:
-        label = range(n_kernels)
-
-    for j in range(n_figure):
-        fig = plt.figure(figsize=(15,10))
-        for i in range(1, n_display+1):
-            if idx+i > n_kernels:
-                break
-            k = fig.add_subplot(row, col, i)
-            k.plot(kernels[order[-(idx+i)]])
-            k.set_xticklabels([])
-            k.set_yticklabels([])
-            k.set_title('k %d: %d' % (order[-(idx+i)], label[order[-(idx+i)]]))
-        idx += n_display
-        plt.tight_layout(.5)
-        plt.savefig(figname+'-part'+str(j)+'.png')
 
 X = read_BCI_signals()
 
@@ -167,36 +133,10 @@ d = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 random_state=rng_global)
 d = d.fit(X)
 
-fig = plt.figure()
-objf = fig.add_suplot(1, 1, 1)
-ofun = objf.boxplot(d.error_)
-medianof = [median.get_ydata()[0]
-            for n, median in enumerate(ofun['medians'])]
-axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
-plt.savefig('EEG-decomposition-error'+figname+'.png')
+plot_objective_func(d.error_, figname)
 
-from mdla import multivariate_sparse_encode
-from collections import Counter
 n_jobs = 4
-r, code = multivariate_sparse_encode(X, d.kernels_,
-                                     n_nonzero_coefs=n_nonzero_coefs,
-                                     n_jobs=n_jobs, verbose=2)
-
-decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
-decomposition_weight.sort()
-weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
-order = weight.argsort()
-saveKernelPlot(d.kernels_, d.n_kernels, order=order, label=weight,
-               figname='EEG-kernels'+figname, row=6)
-
-correlation = Counter(decomposition_weight).items()
-correlation.sort(key=lambda x: x[1])
-labels, values = zip(*correlation)
-indexes = arange(len(correlation))
-plt.figure()
-width = 1
-plt.bar(indexes, values, width, linewidth=0)
-plt.savefig('EEG-coeff_hist_sorted'+figname+'.png')
+plot_atom_usage(X, d.kernels_, n_nonzero_coefs, n_jobs, figname)
 
 with open('EEG-savedico'+figname+'.pkl', 'w+') as f:
     o = {'kernels':d.kernels_, 'error':d.error_, 'kernel_init_len':d.kernel_init_len, 'learning_rate':d.learning_rate, 'n_iter':d.n_iter, 'n_jobs':d.n_jobs, 'n_kernels':d.n_kernels, 'n_nonzero_coefs':d.n_nonzero_coefs}
