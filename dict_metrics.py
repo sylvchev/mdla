@@ -137,15 +137,11 @@ def frobenius_based(A, B):
     return norm(np.abs(A)-np.abs(B), 'fro')
 
 def abs_euclidean(A, B):
-    if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in abs_euclidean(A, B)')
     if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
         raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in abs_euclidean(A, B)')
     return 2.*(1.-np.abs(A.T.dot(B)))
 
 def euclidean (A, B):
-    if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in euclidean(A, B)')
     if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
         raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in euclidean(A, B)')
     return 2.*(1.-A.T.dot(B))
