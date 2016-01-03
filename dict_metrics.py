@@ -31,8 +31,6 @@ def _kernel_registration(this_kernel, dictionary, g):
     n_kernels = len(dictionary)
     k_max_len = array([i.shape[0] for i in dictionary]).max()
     k_min_len = array([i.shape[0] for i in dictionary]).min()
-    if k_min_len < k_len:
-        print ("error, atom larger than the smallest atom of dict")
     
     m_dist = ones((n_kernels, k_max_len-k_len+1))*infty
     m_corr = zeros((n_kernels, k_max_len-k_len+1))
