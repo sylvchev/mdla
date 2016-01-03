@@ -226,7 +226,7 @@ def hausdorff(D1, D2, gdist, scale=False):
     '''
     g = _valid_atom_metric(gdist)
     if g is None:
-        print 'Unknown ground distance, exiting.'
+        print ('Unknown ground distance, exiting.')
         return NaN
     gdm = _compute_gdm(D1, D2, g)
     d =  max([max(min(gdm, axis=0)), max(min(gdm, axis=1))])
@@ -251,7 +251,7 @@ def emd(D1, D2, gdist, scale=False):
     '''
     g = _valid_atom_metric(gdist)
     if g is None:
-        print 'Unknown ground distance, exiting.'
+        print ('Unknown ground distance, exiting.')
         return NaN
     # if gdist == "chordal":
     #     g = chordal
