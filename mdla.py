@@ -1493,16 +1493,13 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
 
         return self
 
-        
-# functions to move in utils/validation.py
-
 def array3d(X, dtype=None, order=None, copy=False, force_all_finite=True):
     """Returns at least 3-d array with data from X"""
     if sp.issparse(X):
         raise TypeError('A sparse matrix was passed, but dense data '
                         'is required. Use X.toarray() to convert to dense.')
     X_3d = np.asarray(np.atleast_3d(X), dtype=dtype, order=order)
-    if X.ndim == 2:
+    if X_3d.ndim == 2:
         X_3d = X_3d.swapaxes(0,2)
         X_3d = X_3d.swapaxes(1,2)
     if force_all_finite:
@@ -1510,6 +1507,3 @@ def array3d(X, dtype=None, order=None, copy=False, force_all_finite=True):
     if X is X_3d and copy:
         X_3d = safe_copy(X_3d)
     return X_3d
-
-
-    
