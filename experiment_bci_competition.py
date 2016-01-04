@@ -40,7 +40,11 @@ def read_BCI_signals():
         notchWidth = 0.1      #width of the notch        
         # Bandpass filtering
         order = 8
-        fc = [8., 30.] # [0.1, 100]
+        fc = array([8., 30.]) # [0.1, 100]
+        fs = 250 # sampling rate, o['SampleRate'][0,0] from loadmat
+        Wn = f0/(fs/2.) # ratio of notch freq. to Nyquist freq.
+        [bn, an] = notch(Wn, notchWidth)
+        [bb, ab] = butter(order, fc/(fs/2.), 'bandpass')
     else:
         f0 = -1.
         notchWidth = 0.
@@ -61,17 +65,12 @@ def read_BCI_signals():
             classes = o['classes']
         print ('Previous preprocessing of BCI dataset found, reusing it')
     else:
-        if preprocessing:
-            fs = sample_rate[0,0]  #sampling rate
-            Wn = f0/(fs/2.)       #ratio of notch freq. to Nyquist freq.
-            [bn, an] = notch(Wn, notchWidth)
-            fs = sample_rate[0,0]  #sampling rate
-            [bb, ab] = butter(order, fc/(fs/2.), 'bandpass')
         for item in lkp:
             if item[-8:] == '-EOG.mat':
+                print ('loading', item)
                 o = loadmat (kppath+item, struct_as_record=True)
                 s = nan_to_num(o['s'])
-                sample_rate = o['SampleRate']    
+                # sample_rate = o['SampleRate']    
                 event_type = o['EVENTTYP']
                 event_pos = o['EVENTPOS']
                 class_label = o['Classlabel']
@@ -86,7 +85,7 @@ def read_BCI_signals():
                         fs[:,e] = filtfilt(real(bb), real(ab), ns[:,e])
                     # decimate the signal
                     if decimation:
-                        dfs = decimate(fs, int(dfactor), axis=0)
+                        fs = decimate(fs, int(dfactor), axis=0)
                     
                 # Event Type
                 lefthand = 769  # class 1
@@ -95,8 +94,8 @@ def read_BCI_signals():
                 tongue = 772    # class 4
                 trial_begin = 768
                 
-                start = 3*sample_rate[0,0]/dfactor # 2s fixation, 1s after cue
-                stop  = 6*sample_rate[0,0]/dfactor # 4s after cue, 3s of EEG
+                start = 3*fs/dfactor # 2s fixation, 1s after cue
+                stop  = 6*fs/dfactor # 4s after cue, 3s of EEG
 
                 trials = event_pos[event_type == trial_begin] 
                 for i, t in enumerate(trials):
