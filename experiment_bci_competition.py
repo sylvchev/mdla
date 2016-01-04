@@ -110,7 +110,7 @@ def read_BCI_signals():
     return signals, classes
 
 
-X = read_BCI_signals()
+X, classes = read_BCI_signals()
 
 rng_global = RandomState(1)
 n_samples = len(X)
