@@ -7,9 +7,8 @@ import sys
 import itertools
 
 import numpy as np
-from math import floor, ceil
+from math import floor
 from time import time
-from numpy.lib.stride_tricks import as_strided
 from matplotlib.mlab import find
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -24,7 +23,8 @@ from sklearn.utils.fixes import safe_copy
 
 # TODO:
 # - speed up by grouping decomposition+update as in pydico.
-# - adding extension for shift invariant dico      
+# - adding extension for shift invariant dico
+
 
 def _shift_and_extend(signal, extended_length, shift_offset):
     '''_shift_and_extend put a copy of signal in a new container of size
@@ -34,26 +34,33 @@ def _shift_and_extend(signal, extended_length, shift_offset):
     extended_signal[shift_offset:shift_offset+signal.shape[0], :] = signal
     return extended_signal
 
+
 def _normalize(dictionary):
     '''Normalize all dictionary elements to have a unit norm'''
     for i in range(len(dictionary)):
         dictionary[i] /= np.linalg.norm(dictionary[i], 'fro')
     return dictionary
 
+
 def _get_learning_rate(iteration, max_iteration, learning_rate):
+    # TODO: change to have last_iterations=max_iterations
+    # TODO: verify that max_iter=1 is not a problem for partial_fit
+    if learning_rate == 0.:
+        return 0.
     last_iterations = np.floor(max_iteration*2./3.)
     if iteration >= last_iterations:
         return last_iterations**learning_rate
     else:
         return (iteration+1)**learning_rate
-    
+
+
 def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
-                                verbose=False):
+                      verbose=False):
     """Sparse coding multivariate signal with OMP
 
     Returns residual and a decomposition array (n_nonzero_coefs, 3),
     each line indicating (amplitude, offset, kernel).
-    
+
     Parameters
     ----------
     signal: array of shape (n_features, n_dims)
@@ -61,7 +68,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
         Each sample is a matrix of shape (n_features, n_dims) with
         n_features >= n_dims.
 
-    dictionary: list of arrays 
+    dictionary: list of arrays
         The dictionary against which to solve the sparse coding of
         the data. The dictionary learned is a list of n_kernels
         elements. Each element is a convolution kernel, i.e. an
@@ -71,7 +78,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
     n_nonzero_coefs : int
         Sparsity controller parameter for multivariate variant
         of OMP
-                
+
     verbose:
         Degree of output the procedure will print.
 
@@ -79,7 +86,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
     -------
     residual: array of (n_features, n_dims)
         Reconstruction error residual. 
-    
+
     decomposition: array of shape (n_nonzero_coefs, 3)
         The sparse code decomposition : (amplitude, offset, kernel)
         for each n_nonzero_coefs.
@@ -124,7 +131,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
                                       n_features, k_off)
 
     if verbose >= 3:
-        print ('[M-OMP # 0 ] kernel', k_selected, 'is selected with amplitude', k_amplitude)
+        print ('[M-OMP # 0 ] kernel', k_selected,
+               'is selected with amplitude', k_amplitude)
     if verbose >= 4:
         print (selected_atom)
         
@@ -160,7 +168,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
                                      'valid')
             correlation_score[i, :len(corr)] = corr
         if verbose >= 4:
-            print ('[M-OMP #', atoms_in_estimate, '] correlation is', correlation_score)
+            print ('[M-OMP #', atoms_in_estimate, '] correlation is',
+                   correlation_score)
         (k_selected, k_off) = np.unravel_index(
             np.argmax(np.abs(correlation_score)),
             correlation_score.shape)
@@ -209,7 +218,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             k_kernel = int(decomposition[i, 2])
             k_len = dictionary[k_kernel].shape[0]
             
-            estimated_signal[k_off:k_off+k_len, :] += (k_amp * dictionary[k_kernel])
+            estimated_signal[k_off:k_off+k_len, :] += (k_amp *
+                                                       dictionary[k_kernel])
         residual = signal - estimated_signal
 
         if verbose >= 3:
@@ -217,7 +227,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None,
             print ('[M-OMP #', atoms_in_estimate-1, '] signal energy is',
                    signal_energy, 'and residual energy is', residual_energy)
         if verbose >= 4:
-            print ('[M-OMP #', atoms_in_estimate-1, ']: partial decomposition',
+            print ('[M-OMP #', atoms_in_estimate-1, ']: partial decomposition', 
                    'is', decomposition[:atoms_in_estimate,:])
         
     # End big loop
@@ -274,11 +284,9 @@ def _multivariate_sparse_encode(X, kernels, n_nonzero_coefs=None,
     """
     n_samples, n_features, n_dims = X.shape
     n_kernels = len(kernels)
-    
-    if n_nonzero_coefs is None:
-        raise ValueError("The sparsity should be indicated")
+
     if n_nonzero_coefs > n_kernels:
-        raise ValueError("The sparsity should be less than the"
+        raise ValueError("The sparsity should be less than the "
                          "number of atoms")
     if n_nonzero_coefs <= 0:
         raise ValueError("The sparsity should be positive")
@@ -349,10 +357,8 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
     n_samples, n_features, n_dims = X.shape
     if isinstance(dictionary, MultivariateDictLearning) or \
        isinstance(dictionary, MiniBatchMultivariateDictLearning):
-       n_kernels = dictionary.n_kernels
        kernels = dictionary.kernels_
     else:
-       n_kernels = len(dictionary)
        kernels = dictionary
 
     if n_nonzero_coefs is None:
@@ -376,7 +382,6 @@ def multivariate_sparse_encode(X, dictionary, n_nonzero_coefs=None,
         print ('[Debug-MOMP] starting parallel %d jobs for %d samples'
                % (n_jobs, n_samples))
         
-    # res_views, code_views
     views = Parallel(n_jobs=n_jobs)(
         delayed(_multivariate_sparse_encode)(
             X[this_slice], kernels, n_nonzero_coefs, verbose)
@@ -419,7 +424,6 @@ def reconstruct_from_code(code, dictionary, n_features):
         (n_features, n_dims) with n_features >= n_dims.
     """
     n_dims = dictionary[0].shape[1]
-    n_kernels = len(dictionary)
     n_samples = len(code)
     signal = list()
     for i in range(n_samples):
@@ -515,13 +519,15 @@ def _compute_gradient(dictionary, decomposition, residual,
                 (k_len-dOffsets[dOffsets_idx])
                 )/k_len
         hessian_base = np.sum(np.abs(coefs[active_idx])**2)
-        step[i] = 1./(learning_rate+hessian_corr+hessian_base)
+        # if learning_rate+hessian_corr+hessian_base == 0.:
+        if learning_rate == 0.:
+            # Gauss-Newton method if mu = 0
+            step[i] = 0
+        else:
+            step[i] = 1./(learning_rate+hessian_corr+hessian_base)
         if ((hessian_corr+hessian_base) != 0):
             hessian_sum += hessian_corr + hessian_base
             hessian_count += 1
-        if not (np.isfinite(step[i])):
-            # Gauss-Newton method if mu = 0
-            step[i] = 0
 
     if verbose >= 5:
         print ('[M-DU]: step is:')
@@ -575,11 +581,6 @@ def _update_dict(dictionary, decomposition, residual,
         Updated dictionary.
         
     """
-    # if verbose >= 1:
-    #     initial = list(dictionary)
-    #     print ('[MDLA-DU] Avant modif:')
-    #     print (dictionary[7])
-
     if verbose >= 2:
         tstart = time()
 
@@ -598,6 +599,7 @@ def _update_dict(dictionary, decomposition, residual,
         print ([(_g[i]**2).sum(0).mean() /
                 (dictionary[i]**2).sum(0).mean()
                 for i in range(len(dictionary))])
+        print ("learning_rate is ", learning_rate)
 
     for i in range(len(dictionary)):
         dictionary[i] = dictionary[i] + _g[i]
@@ -712,6 +714,9 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
     n_jobs: int,
         Number of parallel jobs to run, or -1 to autodetect.
 
+    learning_rate: real,
+        hyperparameter controling the convergence rate
+                
     dict_init: list of arrays
         Initial value for the dictionary for warm restart scenarios.
         List of n_kernels elements, each one is an array of shape
@@ -755,9 +760,6 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
     """
     t0 = time()
     n_samples, n_features, n_dims = X.shape
-    # if n_samples < n_kernels:
-    #     print ('Too few examples, reducing the number of kernel to', n_samples)
-    #     n_kernels = n_samples   
     random_state = check_random_state(random_state)
 
     if n_jobs == -1:
@@ -835,7 +837,8 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
                 break
         if callback is not None:
             callback(locals())
-            
+    # reformating the error
+    errors = np.array(errors).reshape((max_iter,))
     return code, dictionary, errors
 
 def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
@@ -1017,7 +1020,8 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     if verbose >= 2:
         dt = (time() - t0)
         print ('[MDL] learning done (total time: % 3is, % 4.1fmn)' % (dt, dt / 60))
-
+    # reformating the error
+    errors = np.array(errors).reshape((n_iter, n_batches))
     return dictionary, errors
 
 class MultivariateDictMixin(TransformerMixin):
@@ -1169,6 +1173,10 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
     random_state : int or RandomState
         Pseudo number generator state used for random sampling.
 
+    learning_rate : float
+        Value for the learning rate exponent, of the form
+        i**learning_rate, where i is the iteration.
+
     callback: function 
         Function called during learning process, the only parameter
         is a dictionary containing all local variables
@@ -1260,7 +1268,7 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
                     random_state=random_state, max_iter=self.max_iter,
                     callback=self.callback, dict_obj = self)
         self.kernels_ = list(dictionary)
-        self.error_ = list(err)
+        self.error_ = err
 
         # if self.verbose >= 1:
         #     print ('\nEnd of fit')
@@ -1307,6 +1315,10 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
     verbose :
         degree of verbosity of the printed output
 
+    learning_rate : float
+        Value for the learning rate exponent, of the form
+        i**learning_rate, where i is the iteration.
+        
     batch_size : int,
         number of samples in each mini-batch
 
@@ -1416,7 +1428,7 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
                         dict_obj = self)
         self.kernels_ = list(dictionary)
         self.iter_offset_ = self.n_iter
-        self.error_ = list(e)
+        self.error_ = e
         
         return self
 
@@ -1477,7 +1489,7 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
                     dict_obj = self)
         self.kernels_ = list(dictionary)
         self.iter_offset_ = iter_offset + self.n_iter
-        self.error_ = list(e)
+        self.error_ = e
 
         return self
 

@@ -3,6 +3,8 @@ python:
   - 2.7
   - 3.3
 sudo: false
+dist: precise
+group: edge
 
 # Skeleton from https://gist.github.com/dan-blanchard/7045057
 # Setup anaconda
@@ -22,7 +24,8 @@ install:
 
 # Run test
 script:
-  - nosetests --with-coverage --cover-package mdla.py --logging-level=INFO
+  - nosetests --with-coverage --cover-package mdla.py --cover-package dict_metrics.py --logging-level=INFO
+  
 
 # Calculate coverage
 after_success:
