@@ -41,10 +41,10 @@ def read_BCI_signals():
         # Bandpass filtering
         order = 8
         fc = array([8., 30.]) # [0.1, 100]
-        fs = 250 # sampling rate, o['SampleRate'][0,0] from loadmat
-        Wn = f0/(fs/2.) # ratio of notch freq. to Nyquist freq.
+        sr = 250 # sampling rate, o['SampleRate'][0,0] from loadmat
+        Wn = f0/(sr/2.) # ratio of notch freq. to Nyquist freq.
         [bn, an] = notch(Wn, notchWidth)
-        [bb, ab] = butter(order, fc/(fs/2.), 'bandpass')
+        [bb, ab] = butter(order, fc/(sr/2.), 'bandpass')
     else:
         f0 = -1.
         notchWidth = 0.
@@ -94,15 +94,15 @@ def read_BCI_signals():
                 tongue = 772    # class 4
                 trial_begin = 768
                 
-                start = 3*fs/dfactor # 2s fixation, 1s after cue
-                stop  = 6*fs/dfactor # 4s after cue, 3s of EEG
+                start = 3*sr/dfactor # 2s fixation, 1s after cue
+                stop  = 6*sr/dfactor # 4s after cue, 3s of EEG
 
                 trials = event_pos[event_type == trial_begin] 
                 for i, t in enumerate(trials):
                     tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
                     signals.append((tmpfs-tmpfs.mean(axis=0))) # center data
                     sujets.append(item[2:3])
-                    classes.append(class_labels[i])
+                    classes.append(class_label[i])
                                     
     with open(fn, 'w+') as f:
         o = {'signals':signals, 'classes':classes}
