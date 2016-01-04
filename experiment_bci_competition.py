@@ -311,4 +311,6 @@ print ("Wasserstein chordal distance full-half2 is", emd(d3.kernels_, d2.kernels
 # 90ker-K6-klen60-lr5.0
 # Wasserstein chordal distance is 0.636417242678
 # Wasserstein Fubini-Study is 0.679802451865
-
+# again
+# Wasserstein chordal distance is 0.636417242678
+# Wasserstein Fubini-Study is 0.679802451865
