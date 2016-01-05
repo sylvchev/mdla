@@ -1259,7 +1259,8 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
         if  n_dims > self.kernel_init_len:
             raise ValueError('X should have more n_dims than n_features')
         if self.n_kernels < self.kernel_init_len:
-            raise ValueError('X has more features than dictionary kernels')
+            print ("Warning: X has more features than dictionary kernels")
+            # raise ValueError('X has more features than dictionary kernels')
         
         code, dictionary, err = multivariate_dict_learning(X, self.n_kernels,
                     n_nonzero_coefs=self.n_nonzero_coefs,
@@ -1411,7 +1412,8 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
         if  n_dims > self.kernel_init_len:
             raise ValueError('X should have more n_dims than n_features')
         if self.n_kernels < self.kernel_init_len:
-            raise ValueError('X has more features than dictionary kernels')
+            print ("Warning: X has more features than dictionary kernels")
+            # raise ValueError('X has more features than dictionary kernels')
         # if n_samples < self.n_kernels:
         #     raise ValueError('There is more kernel (%d) than samples (%d)' % (self.n_kernels, n_samples))
 
@@ -1470,7 +1472,8 @@ class MiniBatchMultivariateDictLearning(BaseEstimator,
         if  n_dims > self.kernel_init_len:
             raise ValueError('X should have more n_dims than n_features')
         if self.n_kernels < self.kernel_init_len:
-            raise ValueError('X has more features than dictionary kernels')
+            print ("Warning: X has more features than dictionary kernels")
+            # raise ValueError('X has more features than dictionary kernels')
         # if n_samples < self.n_kernels:
         #     raise ValueError('There is more kernel than samples')
 
