@@ -1,4 +1,4 @@
-"""Learning dictionary on BCI Competition dataset"""
+"""Learning dictionary on BCI Competition IV-2a dataset"""
 from __future__ import print_function
 
 import pickle
