@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from mdla import multivariate_sparse_encode
 from collections import Counter
+from numpy import arange, hstack, histogram
 
 # TODO: use sum of decomposition weight instead of number of atom usage in
 #       plot_atom_usage
@@ -41,23 +42,23 @@ def plot_kernels(kernels, n_kernels, col = 5, row = -1,
         plt.tight_layout(.5)
         plt.savefig(figname+'-part'+str(j)+'.png')
 
-def plot_objective_func(error, figname):
+def plot_objective_func(error, n_iter, figname):
     fig = plt.figure()
-    objf = fig.add_suplot(1, 1, 1)
-    ofun = objf.boxplot(error)
+    objf = fig.add_subplot(1, 1, 1)
+    ofun = objf.boxplot(error.T)
     medianof = [median.get_ydata()[0]
                 for n, median in enumerate(ofun['medians'])]
     axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
     plt.savefig('EEG-decomposition-error'+figname+'.png')
 
 def plot_atom_usage(X, kernels, n_nonzero_coefs, n_jobs, figname):
-    r, code = multivariate_sparse_encode(X, d.kernels_,
+    r, code = multivariate_sparse_encode(X, kernels,
                                          n_nonzero_coefs=n_nonzero_coefs,
                                          n_jobs=n_jobs, verbose=2)
 
     decomposition_weight = hstack([code[i][:,2] for i in range(len(code))])
     decomposition_weight.sort()
-    weight, _ = histogram(decomposition_weight, n_kernels, normed=False)
+    weight, _ = histogram(decomposition_weight, len(kernels), normed=False)
     order = weight.argsort()
     plot_kernels(kernels, len(kernels), order=order, label=weight,
                  figname='EEG-kernels'+figname, row=6)

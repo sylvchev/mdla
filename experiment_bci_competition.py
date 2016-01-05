@@ -132,7 +132,7 @@ d = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 random_state=rng_global)
 d = d.fit(X)
 
-plot_objective_func(d.error_, figname)
+plot_objective_func(d.error_, n_iter, figname)
 
 n_jobs = 4
 plot_atom_usage(X, d.kernels_, n_nonzero_coefs, n_jobs, figname)
