@@ -167,6 +167,18 @@ def _valid_atom_metric(gdist):
     else:
         return None
 
+def _scale_metric(gdist, d, D1):
+    if (gdist == "chordal" or gdist == "chordal_principal_angles" or
+        gdist == "fubinistudy" or gdist == "binetcauchy" or
+        gdist == "geodesic"):
+        # TODO: scale with max n_features
+        return d/sqrt(D1[0].shape[0])
+    elif gdist == "frobenius":
+        return d/sqrt(2.)
+    else:
+        return d
+    
+    
 def _compute_gdm(D1, D2, g):
     """Compute ground distance matrix from dictionaries D1 and D2
 
@@ -225,15 +237,7 @@ def hausdorff(D1, D2, gdist, scale=False):
     gdm = _compute_gdm(D1, D2, g)
     d =  max([max(min(gdm, axis=0)), max(min(gdm, axis=1))])
     if not scale: return d
-    else:
-        if (gdist == "chordal" or gdist == "chordal_principal_angles" or
-            gdist == "fubinistudy" or gdist == "binetcauchy" or
-            gdist == "geodesic"):
-            return d/sqrt(D1[0].shape[0])
-        elif gdist == "frobenius":
-            return d/sqrt(2.)
-        else:
-            return d
+    else: return _scale_metric(gdist, d, D1)
         
 def emd(D1, D2, gdist, scale=False):
     '''
@@ -322,15 +326,15 @@ def emd(D1, D2, gdist, scale=False):
     d = sol['primal objective']
 
     if not scale: return d
-    else:
-        if (gdist == "chordal" or gdist == "chordal_principal_angles" or
-            gdist == "fubinistudy" or gdist == "binetcauchy" or
-            gdist == "geodesic"):
-            return d/sqrt(D1[0].shape[0])
-        elif gdist == "frobenius":
-            return d/sqrt(2.)
-        else:
-            return d
+    else: return _scale_metric(gdist, d, D1)
+        # if (gdist == "chordal" or gdist == "chordal_principal_angles" or
+        #     gdist == "fubinistudy" or gdist == "binetcauchy" or
+        #     gdist == "geodesic"):
+        #     return d/sqrt(D1[0].shape[0])
+        # elif gdist == "frobenius":
+        #     return d/sqrt(2.)
+        # else:
+        #     return d
 
 def _multivariate_correlation(s, D):
     """Compute correlation between multivariate atoms
