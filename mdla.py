@@ -435,7 +435,6 @@ def reconstruct_from_code(code, dictionary, n_features):
                                                  int(n_features), int(k_offset))
         signal.append(s)
     return np.array(signal)
-        
 
 def _compute_gradient(dictionary, decomposition, residual,
                       learning_rate=None, random_state=None,
@@ -839,6 +838,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         if callback is not None:
             callback(locals())
     # reformating the error
+    print ("errors=", len(errors), ", reshape into", (max_iter,))
     errors = np.array(errors).reshape((max_iter,))
     return code, dictionary, errors
 
