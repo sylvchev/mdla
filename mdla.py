@@ -432,7 +432,7 @@ def reconstruct_from_code(code, dictionary, n_features):
         s = np.zeros(shape=(n_features, n_dims))
         for k_amplitude, k_offset, k_selected in decomposition:
             s += k_amplitude * _shift_and_extend(dictionary[int(k_selected)],
-                                                 n_features, k_offset)
+                                                 int(n_features), int(k_offset))
         signal.append(s)
     return np.array(signal)
         
@@ -963,7 +963,7 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     if verbose == 1:
         print('\n[dict_learning]', end=' ')
 
-    n_batches = floor(float(len(X)) / batch_size)
+    n_batches = int(floor(float(len(X)) / batch_size))
     if shuffle:
         X_train = X.copy()
         random_state.shuffle(X_train)
@@ -975,7 +975,7 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     if verbose >= 2:
         print ('[MDL] Using %d jobs and %d batch of %d examples' % (n_jobs, n_batches, batch_size))
 
-    for ii, this_X in zip(range(iter_offset*int(n_batches), (iter_offset + n_iter)*int(n_batches)), batches):
+    for ii, this_X in zip(range(iter_offset*n_batches, (iter_offset + n_iter)*n_batches), batches):
         dt = (time() - t0)
 
         try:
@@ -983,7 +983,7 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
                             n_nonzero_coefs=n_nonzero_coefs,
                             n_jobs=n_jobs, verbose=verbose)
             # Update dictionary
-            mu = _get_learning_rate(ii/int(n_batches)+1, iter_offset+n_iter+1,
+            mu = _get_learning_rate(ii/n_batches+1, iter_offset+n_iter+1,
                                     learning_rate)
             dictionary = _update_dict(dictionary, decomposition=code,
                                       residual=r, verbose=verbose,
@@ -996,19 +996,19 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
                 current_cost += np.linalg.norm(r[i], 'fro') + len(code[i])
             errors.append(current_cost/len(r))
 
-            if np.mod((ii-iter_offset), int(n_batches)) == 0:
+            if np.mod((ii-iter_offset), n_batches) == 0:
                 if verbose >= 2:
                     print ('[MDL] Dictionary updated, iteration %d '\
                            'with learning rate %.2f (elapsed time: '\
                            '% 3is, % 4.1fmn)'%
-                           ((ii-iter_offset)/int(n_batches), mu, dt, dt / 60))
+                           ((ii-iter_offset)/n_batches, mu, dt, dt / 60))
                 elif verbose == 1:
                     sys.stdout.write(".")
                     sys.stdout.flush()
                 if callback is not None:
                     callback(locals())
 
-            if ii == (iter_offset+1)*int(n_batches) and verbose >= 1:
+            if ii == (iter_offset+1)*n_batches and verbose >= 1:
                 print ('Expecting this learning iterations to finish in',
                        (time()-t0)*n_iter/60., 'm')
                 # if verbose == 1:
