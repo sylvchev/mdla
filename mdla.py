@@ -838,7 +838,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
         if callback is not None:
             callback(locals())
     # reformating the error
-    print ("errors=", len(errors), ", reshape into", (max_iter,))
+    # print ("errors=", len(errors), ", reshape into", (max_iter,))
     errors = np.array(errors).reshape((max_iter,))
     return code, dictionary, errors
 
