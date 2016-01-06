@@ -116,13 +116,13 @@ rng_global = RandomState(1)
 n_samples = len(X)
 n_dims = X[0].shape[0] # 22 electrodes
 n_features = X[0].shape[1] # 375, 3s of decimated signal at 125Hz
-kernel_init_len = 50 # kernel size is 50
+kernel_init_len = 100 # kernel size is 50
 n_kernels = 90 
-n_nonzero_coefs = 6
+n_nonzero_coefs = 3
 learning_rate = 5.0
-n_iter = 50 # 100
+n_iter = 40 # 100
 n_jobs, batch_size = -1, None # n_cpu, 5*n_cpu
-figname="-90ker-K6-klen50-lr5.0-emm-all"
+figname="-90ker-K3-klen100-lr5.0-emm-all"
 
 d = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 batch_size=batch_size, n_iter=n_iter,
