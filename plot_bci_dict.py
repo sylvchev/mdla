@@ -1,3 +1,5 @@
+import matplolib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mdla import multivariate_sparse_encode
 from collections import Counter
