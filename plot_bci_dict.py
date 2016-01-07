@@ -85,7 +85,7 @@ def plot_reconstruction_samples(X, r, code, kernels, n, figname):
         s = reconstruct_from_code([code[index[-i]]], kernels, n_features)  
         ka.plot(s[0,:,:])
     plt.tight_layout(.5)
-    plt.savefig(figname+'.png')
+    plt.savefig('EEG-reconstruction'+figname+'.png')
                 
 def plot_objective_func_box(error, n_iter, figname):
     fig = plt.figure()
@@ -145,4 +145,4 @@ def plot_atom_usage(X, kernels, n_nonzero_coefs, n_jobs, figname):
                  amp=amplitudes, figname='EEG-kernels'+figname, row=6)
     plot_coef_hist(decomposition_weight, figname)
     plot_weight_hist(amplitudes, figname)
-    plot_reconstruction_samples(X, r, code, kernels, 3, figname):
+    plot_reconstruction_samples(X, r, code, kernels, 3, figname)
