@@ -1,4 +1,4 @@
-import matplolib
+import matplotblib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mdla import multivariate_sparse_encode
