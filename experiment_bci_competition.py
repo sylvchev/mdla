@@ -104,9 +104,9 @@ def read_BCI_signals():
                     sujets.append(item[2:3])
                     classes.append(class_label[i])
                                     
-    with open(fn, 'w+') as f:
-        o = {'signals':signals, 'classes':classes}
-        pickle.dump(o,f)
+        with open(fn, 'w+') as f:
+            o = {'signals':signals, 'classes':classes}
+            pickle.dump(o,f)
     return signals, classes
 
 
@@ -117,12 +117,12 @@ n_samples = len(X)
 n_dims = X[0].shape[0] # 22 electrodes
 n_features = X[0].shape[1] # 375, 3s of decimated signal at 125Hz
 kernel_init_len = 80 # kernel size is 50
-n_kernels = 120 
+n_kernels = 60 
 n_nonzero_coefs = 3
 learning_rate = 5.0
 n_iter = 40 # 100
 n_jobs, batch_size = -1, None # n_cpu, 5*n_cpu
-figname="-120ker-K3-klen80-lr5.0-emm-all"
+figname="-60ker-K3-klen80-lr5.0-emm-all"
 
 d = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                 batch_size=batch_size, n_iter=n_iter,
