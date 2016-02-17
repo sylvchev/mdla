@@ -134,7 +134,7 @@ def geodesic(A, B):
 def frobenius(A, B):
     if A.shape != B.shape:
         raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobenius(A, B)')
-    return norm(np.abs(A)-np.abs(B), 'fro')
+    return norm(A-B, 'fro')
 
 def abs_euclidean(A, B):
     if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
