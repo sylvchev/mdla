@@ -131,9 +131,9 @@ def geodesic(A, B):
     theta = principal_angles(A, B)
     return norm(theta)
 
-def frobenius_based(A, B):
+def frobenius(A, B):
     if A.shape != B.shape:
-        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobenius_based(A, B)')
+        raise ValueError('Atoms have different dim (', A.shape, ' and ', B.shape,'). Error raised in frobenius(A, B)')
     return norm(np.abs(A)-np.abs(B), 'fro')
 
 def abs_euclidean(A, B):
@@ -159,7 +159,7 @@ def _valid_atom_metric(gdist):
     elif gdist == "geodesic":
         return geodesic
     elif gdist == "frobenius":
-        return frobenius_based
+        return frobenius
     elif gdist == "abs_euclidean":
         return abs_euclidean
     elif gdist == "euclidean":
@@ -262,7 +262,7 @@ def emd(D1, D2, gdist, scale=False):
     # elif gdist == "geodesic":
     #     g = geodesic
     # elif gdist == "frobenius":
-    #     g = frobenius_based
+    #     g = frobenius
     # elif gdist == "abs_euclidean":
     #     g = abs_euclidean
     # elif gdist == "euclidean":
