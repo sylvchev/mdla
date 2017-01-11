@@ -139,12 +139,14 @@ def frobenius(A, B):
 def abs_euclidean(A, B):
     if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
         raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in abs_euclidean(A, B)')
-    return 2.*(1.-np.abs(A.T.dot(B)))
+    if np.allclose(A, B): return 0.
+    else: return sqrt(2.*(1.-np.abs(A.T.dot(B))))
 
 def euclidean (A, B):
     if (A.ndim != 1 and A.shape[1] != 1) or (B.ndim != 1 and B.shape[1] != 1):
         raise ValueError('Atoms are not univariate (', A.shape, ' and ', B.shape,'). Error raised in euclidean(A, B)')
-    return 2.*(1.-A.T.dot(B))
+    if np.allclose(A, B): return 0.
+    else: return sqrt(2.*(1.-A.T.dot(B)))
 
 def _valid_atom_metric(gdist):
     """Verify that atom metric exist and return the correct function"""
