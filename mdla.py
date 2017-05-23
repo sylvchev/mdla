@@ -933,9 +933,11 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     #     n_kernels = n_samples   
     random_state = check_random_state(random_state)
 
-    if n_jobs == -1 and cpu_count() != 0:
+    # if n_jobs == -1 and cpu_count() != 0:
+    #     n_jobs = cpu_count()
+    # else: n_jobs = 1
+    if n_jobs == -1:
         n_jobs = cpu_count()
-    else: n_jobs = 1
 
     if batch_size is None:
         batch_size = 5 * n_jobs
@@ -965,6 +967,7 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
         print('\n[dict_learning]', end=' ')
 
     n_batches = int(floor(float(len(X)) / batch_size))
+    if n_batches == 0: n_batches = 1
     if shuffle:
         X_train = X.copy()
         random_state.shuffle(X_train)
