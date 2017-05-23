@@ -38,7 +38,7 @@ def test_scale():
             assert_almost_equal (0., m(du, du, g, scale=True))
 
 def test_kernel_registration():
-    dm2 = [randn(n_features+i/2, n_dims) for i in range(n_kernels)]
+    dm2 = [randn(int(n_features+i/2), n_dims) for i in range(n_kernels)]
     for i in range(len(dm2)):
         dm2[i] /= norm(dm2[i], 'fro')
 
@@ -68,7 +68,7 @@ def test_kernel_registration():
     #     assert_almost_equal(0., m(dm4, dm5, 'chordal'))
     #     assert_almost_equal(0., m(dm5, dm4, 'chordal'))
         
-    du2 = [randn(n_features+i/2, 1) for i in range(n_kernels)]
+    du2 = [randn(int(n_features+i/2), 1) for i in range(n_kernels)]
     for i in range(len(du2)):
         du2[i] /= norm(du2[i])
     du3 = []
