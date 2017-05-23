@@ -27,7 +27,7 @@ before_install:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip nose numpy scipy scikit-learn matplotlib cvxopt
   - source activate test-environment
-  - pip install codecov pep8 python-coveralls cvxopt
+  - pip install codecov pep8 python-coveralls 
 
 script:
   - nosetests --with-coverage --cover-package mdla.py --cover-package dict_metrics.py --logging-level=INFO
