@@ -1,31 +1,34 @@
 language: python
 python:
-  - 2.7
-  - 3.3
+  - "2.7"
+  - "3.5"
+
 sudo: false
-dist: precise
-group: edge
+# dist: precise
+# group: edge
 
 notifications:
   slack: lisvai:SgdQxglgGWYCyiAAWa3aU5Pg
 
-# Skeleton from https://gist.github.com/dan-blanchard/7045057
-# Setup anaconda
 before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda2/bin:$PATH
-  - conda update --yes conda
-  
-# Install packages
-install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION nose numpy scipy scikit-learn matplotlib cvxopt
-  # Coverage packages are on Dan Blanchard binstar channel
-  - conda install --yes -c dan_blanchard python-coveralls nose-cov
-  # - conda install --yes -c https://conda.binstar.org/anaconda cvxopt
+  # - sudo apt-get update
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
 
-# Run test
+install:
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip nose numpy scipy scikit-learn matplotlib cvxopt
+  - source activate test-environment
+  - pip install codecov pep8 python-coveralls
+
 script:
   - nosetests --with-coverage --cover-package mdla.py --cover-package dict_metrics.py --logging-level=INFO
   
@@ -33,3 +36,4 @@ script:
 # Calculate coverage
 after_success:
   - coveralls --config_file .coveragerc
+  - codecov
