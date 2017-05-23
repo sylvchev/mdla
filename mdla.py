@@ -7,7 +7,7 @@ import sys
 import itertools
 
 import numpy as np
-from math import floor
+from numpy import floor
 from time import time
 from matplotlib.mlab import find
 
@@ -933,8 +933,9 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
     #     n_kernels = n_samples   
     random_state = check_random_state(random_state)
 
-    if n_jobs == -1:
+    if n_jobs == -1 and cpu_count() != 0:
         n_jobs = cpu_count()
+    else: n_jobs = 1
 
     if batch_size is None:
         batch_size = 5 * n_jobs
