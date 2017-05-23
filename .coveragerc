@@ -1,5 +1,7 @@
 [run]
-source = mdla
+source =
+    mdla
+	 dict_metrics
 omit =
     */python?.?/*
     */lib-python/?.?/*.py
@@ -7,4 +9,7 @@ omit =
     */site-packages/ordereddict.py
     */site-packages/nose/*
     */unittest2/*
-    test_mdla*
+
+disable_warnings =
+    module-not-imported
+    no-data-collected
