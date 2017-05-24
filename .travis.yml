@@ -38,5 +38,4 @@ script:
 after_success:
   - coveralls --config_file .coveragerc
   - codecov
-  - export CODACY_PROJECT_TOKEN="21b6c8e9b7334f45a1d09132194528f8"
   - python-codacy-coverage -r coverage.xml
