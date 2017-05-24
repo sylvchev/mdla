@@ -32,33 +32,28 @@ def test_mdla_shapes():
         assert_true(dico.kernels_[i].shape == (n_features, n_dims))
         
 def test_multivariate_input_shape():
-    n_kernels, n_dims = 4, 3
+    n_kernels = 7
+    n_dims_w = 6
+    Xw = [rng_global.randn(n_features, n_dims_w) for i in range(n_samples)]
+
     dico = MultivariateDictLearning(n_kernels=n_kernels).fit(X)
     for i in range(n_kernels):
         assert_true(dico.kernels_[i].shape == (n_features, n_dims))
     
-    n_dims = 6
-    Xw = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     dico = MultivariateDictLearning(n_kernels=n_kernels)
     assert_raises(ValueError, dico.fit, Xw)
 
-    n_kernels, n_dims = 4, 3
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels).fit(X)
     for i in range(n_kernels):
         assert_true(dico.kernels_[i].shape == (n_features, n_dims))
     
-    n_dims = 6
-    Xw = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels)
     assert_raises(ValueError, dico.fit, Xw)
     
-    n_kernels, n_dims = 4, 3
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels).partial_fit(X)
     for i in range(n_kernels):
         assert_true(dico.kernels_[i].shape == (n_features, n_dims))
     
-    n_dims = 6
-    Xw = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels)
     assert_raises(ValueError, dico.partial_fit, Xw)
 
