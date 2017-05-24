@@ -27,13 +27,16 @@ before_install:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip nose numpy scipy scikit-learn matplotlib cvxopt
   - source activate test-environment
-  - pip install codecov pep8 python-coveralls 
+  - pip install codecov pep8 python-coveralls codacy-coverage
 
 script:
   - nosetests --with-coverage --cover-erase --logging-level=INFO
+  - coverage xml
   
 
 # Calculate coverage
 after_success:
   - coveralls --config_file .coveragerc
   - codecov
+  - export CODACY_PROJECT_TOKEN="21b6c8e9b7334f45a1d09132194528f8"
+  - python-codacy-coverage -r coverage.xml
