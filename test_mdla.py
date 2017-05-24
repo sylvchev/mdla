@@ -3,10 +3,8 @@ import numpy as np
 
 from sklearn.utils.testing import assert_almost_equal
 from sklearn.utils.testing import assert_array_almost_equal
-# from sklearn.utils.testing import assert_array_equal
 from sklearn.utils.testing import assert_equal
 from sklearn.utils.testing import assert_true
-# from sklearn.utils.testing import assert_less
 from sklearn.utils.testing import assert_raises
 
 from mdla import MultivariateDictLearning
@@ -15,11 +13,13 @@ from mdla import SparseMultivariateCoder
 from mdla import reconstruct_from_code
 from mdla import multivariate_sparse_encode
 
+
 rng_global = np.random.RandomState(0)
-n_samples, n_features, n_dims = 10, 5, 3
-X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
+
 
 def test_mdla_shapes():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
                                     max_iter=10, verbose=5).fit(X)
@@ -30,8 +30,11 @@ def test_mdla_shapes():
                 random_state=0, verbose=5, n_iter=10).fit(X)
     for i in range(n_kernels):
         assert_true(dico.kernels_[i].shape == (n_features, n_dims))
-        
+
+
 def test_multivariate_input_shape():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 7
     n_dims_w = 6
     Xw = [rng_global.randn(n_features, n_dims_w) for i in range(n_samples)]
@@ -57,7 +60,10 @@ def test_multivariate_input_shape():
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels)
     assert_raises(ValueError, dico.partial_fit, Xw)
 
+
 def test_mdla_normalization():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
                                     max_iter=2, verbose=1).fit(X)
@@ -69,7 +75,10 @@ def test_mdla_normalization():
     for k in dico.kernels_:
         assert_almost_equal(np.linalg.norm(k, 'fro'), 1.)
 
+
 def test_callback():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     def my_callback(loc):
         d = loc['dict_obj']
@@ -85,7 +94,10 @@ def test_callback():
     code = dico.fit(X).transform(X[0])
     assert_true(len(code[0]) <= 1)
 
+
 def test_mdla_nonzero_coefs():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
                                 max_iter=3, n_nonzero_coefs=3, verbose=5)
@@ -97,7 +109,9 @@ def test_mdla_nonzero_coefs():
     code = dico.fit(X).transform(X[0])
     assert_true(len(code[0]) <= 3)
 
+
 def test_X_array():
+    n_samples, n_features, n_dims = 10, 5, 3
     n_kernels = 8
     X = rng_global.randn(n_samples, n_features, n_dims)
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
@@ -110,7 +124,10 @@ def test_X_array():
     code = dico.fit(X).transform(X[0])
     assert_true(len(code[0]) <= 3)
 
+
 def test_mdla_shuffle():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                     random_state=0, n_iter=3, n_nonzero_coefs=1,
@@ -118,7 +135,10 @@ def test_mdla_shuffle():
     code = dico.fit(X).transform(X[0])
     assert_true(len(code[0]) <= 1)
 
+
 def test_n_kernels():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     dico = MultivariateDictLearning(random_state=0, max_iter=2,
                                     n_nonzero_coefs=1, verbose=5).fit(X)
     assert_true(len(dico.kernels_) == 2*n_features)
@@ -130,8 +150,11 @@ def test_n_kernels():
     dico = MiniBatchMultivariateDictLearning(random_state=0,
                     n_iter=2, n_nonzero_coefs=1, verbose=5).partial_fit(X)
     assert_true(len(dico.kernels_) == 2*n_features)
-    
+
+
 def test_mdla_nonzero_coef_errors():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
                                 max_iter=2, n_nonzero_coefs=0)
@@ -141,7 +164,10 @@ def test_mdla_nonzero_coef_errors():
                                 n_iter=2, n_nonzero_coefs=n_kernels+1)
     assert_raises(ValueError, dico.fit, X)
 
+
 def test_sparse_encode():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = MultivariateDictLearning(n_kernels=n_kernels, random_state=0,
                                     max_iter=2, n_nonzero_coefs=1)
@@ -151,6 +177,8 @@ def test_sparse_encode():
     assert_true(len(code[0]) <= 1)
 
 def test_dict_init():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     d = [rng_global.randn(n_features, n_dims) for i in range(n_kernels)]
     for i in range(len(d)):
@@ -215,6 +243,8 @@ def test_mdla_dict_update():
         assert_true((k-c).sum() != 0.)
             
 def test_sparse_multivariate_coder():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     d = [np.random.randn(n_features, n_dims) for i in range(n_kernels)]
     coder = SparseMultivariateCoder(dictionary=d, n_nonzero_coefs=1, n_jobs=-1)
@@ -223,6 +253,8 @@ def test_sparse_multivariate_coder():
         assert_array_almost_equal(d[i], coder.kernels_[i])
 
 def TODO_test_shift_invariant_input():
+    n_samples, n_features, n_dims = 10, 5, 3
+    X = [rng_global.randn(n_features, n_dims) for i in range(n_samples)]
     n_kernels = 8
     dico = list()
     dico.append(np.array([1, 2, 3, 2, 1]))
@@ -253,6 +285,7 @@ def _generate_testbed(kernel_init_len, n_nonzero_coefs, n_kernels,
     return dico, signals, decomposition
         
 def test_mdla_reconstruction():
+    n_samples, n_features, n_dims = 10, 5, 3
     n_kernels = 8
     n_nonzero_coefs = 3
     kernel_init_len = n_features 
@@ -301,6 +334,7 @@ def test_multivariate_OMP():
 
 def _test_with_pydico():
     import pickle, shutil
+    n_samples, n_features, n_dims = 10, 5, 3
     n_kernels = 8
     n_nonzero_coefs = 3
     kernel_init_len = n_features
