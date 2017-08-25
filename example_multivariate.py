@@ -92,7 +92,7 @@ n_features = kernel_init_len = 20
 n_nonzero_coefs = 3
 n_kernels, max_iter, n_iter, learning_rate = 50, 10, 1, 1.5
 n_jobs, batch_size = -1, 10
-detection_rate, wasserstein, objective_error = list(), list(), list()
+detect_rate, wasserstein, objective_error = list(), list(), list()
 
 generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
                                              n_kernels, n_samples, n_features,
@@ -116,7 +116,7 @@ learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
 for i in range(max_iter):
     learned_dict = learned_dict.partial_fit(X)
     # Compute the detection rate
-    detection_rate.append(detectionRate(learned_dict.kernels_,
+    detect_rate.append(detection_rate(learned_dict.kernels_,
                                         generating_dict, 0.99))
     # Compute the Wasserstein distance
     wasserstein.append(emd(learned_dict.kernels_, generating_dict,
@@ -124,7 +124,7 @@ for i in range(max_iter):
     # Get the objective error
     objective_error.append(learned_dict.error_.sum())
     
-plot_multivariate(array(objective_error), array(detection_rate),
+plot_multivariate(array(objective_error), array(detect_rate),
                 100.-array(wasserstein), n_iter, 'multivariate-case')
     
 # Another possibility is to rely on a callback function such as 
@@ -136,7 +136,7 @@ def callback_distance(loc):
         d = loc['dict_obj']
         d.wasserstein.append(emd(loc['dictionary'], d.generating_dict, 
                                  'chordal', scale=True))
-        d.detection_rate.append(detectionRate(loc['dictionary'],
+        d.detect_rate.append(detection_rate(loc['dictionary'],
                                               d.generating_dict, 0.99))
         d.objective_error.append(loc['current_cost']) 
 
@@ -150,13 +150,13 @@ learned_dict2 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                                 dict_init=dict_init, random_state=rng_global)
 learned_dict2.generating_dict = list(generating_dict)
 learned_dict2.wasserstein = list()
-learned_dict2.detection_rate = list()
+learned_dict2.detect_rate = list()
 learned_dict2.objective_error = list()
 
 learned_dict2 = learned_dict2.fit(X)
 
 plot_multivariate(array(learned_dict2.objective_error),
-                array(learned_dict2.detection_rate),
+                array(learned_dict2.detect_rate),
                 100.-array(learned_dict2.wasserstein),
                 n_iter=1, figname='multivariate-case-callback')
     
