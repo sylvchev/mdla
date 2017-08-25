@@ -24,8 +24,8 @@ def plot_kernels(kernels, n_kernels, col = 5, row = -1,
         col = n_kernels / int(row)
         if n_kernels % int(row) != 0:
             col += 1
-    n_display = row*col
-    n_figure = n_kernels / int(n_display)
+    n_display = row * col
+    n_figure = int(n_kernels / n_display)
     if n_kernels % int(n_display) != 0:
         n_figure += 1
     if order is None:
@@ -35,7 +35,7 @@ def plot_kernels(kernels, n_kernels, col = 5, row = -1,
     if amp is None:
         amp = range(n_kernels)
 
-    for j in range(n_figure):
+    for j in range(int(n_figure)):
         fig = plt.figure(figsize=(15,10))
         for i in range(1, n_display+1):
             if idx+i > n_kernels:
@@ -111,8 +111,7 @@ def plot_objective_func(error, n_iter, figname):
     plt.savefig('EEG-decomposition-error'+figname+'.png')
 
 def plot_coef_hist(decomposition_weight, figname, width=1):
-    correlation = Counter(decomposition_weight).items()
-    correlation.sort(key=lambda x: x[1])
+    correlation = sorted(Counter(decomposition_weight).items())
     labels, values = zip(*correlation)
     indexes = arange(len(correlation))
     plt.figure()
