@@ -826,8 +826,8 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
             dE = abs(errors[-2] - errors[-1])
             # assert(dE >= -tol * errors[-1])
             if ii == 1 and verbose == 1:
-                print ('Expecting this learning experiment to finish in',
-                       (time()-t0)*max_iter/60., 'm')
+                print ('Expecting this learning experiment to finish in %.2f m'
+                       % (time()-t0)*max_iter/60.)
             if dE < tol * errors[-1]:
                 if verbose >= 1:
                     # A line return
@@ -1013,8 +1013,8 @@ def multivariate_dict_learning_online(X, n_kernels=2, n_nonzero_coefs=1,
                     callback(locals())
 
             if ii == (iter_offset+1)*n_batches and verbose >= 1:
-                print ('Expecting this learning iterations to finish in',
-                       (time()-t0)*n_iter/60., 'm')
+                print ('Expecting this learning iterations to finish in %.2f m'
+                       % ((time()-t0)*n_iter/60.))
                 # if verbose == 1:
                 # print ('Time from begining is',time()-t0,'s, with n_iter=',
                 #         n_iter, ', iter_offset=', iter_offset,
