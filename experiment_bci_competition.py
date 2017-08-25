@@ -59,7 +59,7 @@ def read_BCI_signals():
     fn = 'bcicompdata'+str(hash(str(preprocessing)+str(f0)+str(notchWidth)+str(order)+str(fc)+str(decimation)+str(dfactor)))+'.pickle'
     
     if exists(fn):
-        with open(fn,'r') as f:
+        with open(fn, 'rb') as f:
             o = pickle.load(f)
             signals = o['signals']
             classes = o['classes']
@@ -85,7 +85,7 @@ def read_BCI_signals():
                         fs[:,e] = filtfilt(real(bb), real(ab), ns[:,e])
                     # decimate the signal
                     if decimation:
-                        fs = decimate(fs, int(dfactor), axis=0)
+                        fs = decimate(fs, int(dfactor), axis=0, zero_phase=True)
                     
                 # Event Type
                 lefthand = 769  # class 1
@@ -94,17 +94,17 @@ def read_BCI_signals():
                 tongue = 772    # class 4
                 trial_begin = 768
                 
-                start = 3*sr/dfactor # 2s fixation, 1s after cue
-                stop  = 6*sr/dfactor # 4s after cue, 3s of EEG
+                start = 3 * sr / dfactor # 2s fixation, 1s after cue
+                stop  = 6 * sr / dfactor # 4s after cue, 3s of EEG
 
                 trials = event_pos[event_type == trial_begin] 
                 for i, t in enumerate(trials):
-                    tmpfs = fs[t/dfactor+start:t/dfactor+stop,0:22]
+                    tmpfs = fs[int(t / dfactor + start):int(t / dfactor + stop), 0:22]
                     signals.append((tmpfs-tmpfs.mean(axis=0))) # center data
                     sujets.append(item[2:3])
                     classes.append(class_label[i])
                                     
-        with open(fn, 'w+') as f:
+        with open(fn, 'wb') as f:
             o = {'signals':signals, 'classes':classes}
             pickle.dump(o,f)
     return signals, classes
