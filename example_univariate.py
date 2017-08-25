@@ -3,12 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
 from mdla import multivariate_sparse_encode
-from dict_metrics import hausdorff, emd, detectionRate
+from dict_metrics import hausdorff, emd, detection_rate
 from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint, RandomState
 
-def plot_univariate(objective_error, detection_rate, wasserstein,
+def plot_univariate(objective_error, detect_rate, wasserstein,
                     n_iter, figname):
     fig = plt.figure(figsize=(15,5))
     if n_iter == 1: step = 5
@@ -16,10 +16,10 @@ def plot_univariate(objective_error, detection_rate, wasserstein,
     
     # plotting data from objective error
     objerr = fig.add_subplot(1,3,1)
-    ofun = objerr.boxplot(objective_error)
-    medianof = [median.get_ydata()[0]
-                for n, median in enumerate(ofun['medians'])]
-    axof = objf.plot(arange(1, n_iter+1), medianof, linewidth=1)
+    # ofun = objerr.boxplot(objective_error)
+    # medianof = [median.get_ydata()[0]
+    #             for n, median in enumerate(ofun['medians'])]
+    # _ = objerr.plot(arange(1, n_iter+1), medianof, linewidth=1)
     
     _ = objerr.plot(step*arange(1, len(objective_error)+1), objective_error, 
                      color='green', label=r'Objective error')
@@ -32,17 +32,17 @@ def plot_univariate(objective_error, detection_rate, wasserstein,
     
     # plotting data from detection rate 0.99
     detection = fig.add_subplot(1,3,2)        
-    _ = detection.plot(step*arange(1,len(detection_rate)+1), detection_rate,
+    _ = detection.plot(step*arange(1,len(detect_rate)+1), detect_rate,
                             color='magenta', label=r'Detection rate 0.99')
-    detection.axis([0, len(detection_rate), 0, 100])
-    detection.set_xticks(arange(0, step*len(detection_rate)+1, step))
+    detection.axis([0, len(detect_rate), 0, 100])
+    detection.set_xticks(arange(0, step*len(detect_rate)+1, step))
     detection.set_xlabel('Iteration')
     detection.set_ylabel(r'Recovery rate (in %)')
     detection.legend(loc='upper left')
     
     # plotting data from our metric
     met = fig.add_subplot(1,3,3)
-    _ = met.plot(step*arange(1, len(wasserstein)+1), 100-wasserstein,
+    _ = met.plot(step*arange(1, len(wasserstein)+1), 100*(1-wasserstein),
                     label=r'$d_W$', color='red') 
     met.axis([0, len(wasserstein), 0, 100])
     met.set_xticks(arange(0, step*len(wasserstein)+1, step))
@@ -98,7 +98,7 @@ n_features = kernel_init_len = 20
 n_nonzero_coefs = 3
 n_kernels, max_iter, n_iter, learning_rate = 50, 10, 3, 1.5
 n_jobs, batch_size = -1, 10
-detection_rate, wasserstein, objective_error = list(), list(), list()
+detect_rate, wasserstein, objective_error = list(), list(), list()
 
 generating_dict, X, code = _generate_testbed(kernel_init_len, n_nonzero_coefs,
                                              n_kernels, n_samples, n_features,
@@ -122,7 +122,7 @@ learned_dict = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
 for i in range(max_iter):
     learned_dict = learned_dict.partial_fit(X)
     # Compute the detection rate
-    detection_rate.append(detectionRate(learned_dict.kernels_,
+    detect_rate.append(detection_rate(learned_dict.kernels_,
                                         generating_dict, 0.99))
     # Compute the Wasserstein distance
     wasserstein.append(emd(learned_dict.kernels_, generating_dict,
@@ -130,7 +130,7 @@ for i in range(max_iter):
     # Get the objective error
     objective_error.append(learned_dict.error_.sum())
     
-plot_univariate(array(objective_error), array(detection_rate),
+plot_univariate(array(objective_error), array(detect_rate),
                 array(wasserstein), n_iter, 'univariate-case')
     
 # Another possibility is to rely on a callback function such as 
@@ -142,7 +142,7 @@ def callback_distance(loc):
         d = loc['dict_obj']
         d.wasserstein.append(emd(loc['dictionary'], d.generating_dict, 
                                  'chordal', scale=True))
-        d.detection_rate.append(detectionRate(loc['dictionary'],
+        d.detect_rate.append(detection_rate(loc['dictionary'],
                                               d.generating_dict, 0.99))
         d.objective_error.append(loc['current_cost']) 
 
@@ -156,13 +156,13 @@ learned_dict2 = MiniBatchMultivariateDictLearning(n_kernels=n_kernels,
                                 dict_init=dict_init, random_state=rng_global)
 learned_dict2.generating_dict = list(generating_dict)
 learned_dict2.wasserstein = list()
-learned_dict2.detection_rate = list()
+learned_dict2.detect_rate = list()
 learned_dict2.objective_error = list()
 
 learned_dict2 = learned_dict2.fit(X)
 
 plot_univariate(array(learned_dict2.objective_error),
-                array(learned_dict2.detection_rate),
+                array(learned_dict2.detect_rate),
                 array(learned_dict2.wasserstein),
                 n_iter=1, figname='univariate-case-callback')
     
