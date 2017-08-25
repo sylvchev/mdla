@@ -137,7 +137,7 @@ plot_objective_func(d.error_, n_iter, figname)
 n_jobs = 4
 plot_atom_usage(X, d.kernels_, n_nonzero_coefs, n_jobs, figname)
 
-with open('EEG-savedico'+figname+'.pkl', 'w+') as f:
+with open('EEG-savedico'+figname+'.pkl', 'wb') as f:
     o = {'kernels':d.kernels_, 'error':d.error_, 'kernel_init_len':d.kernel_init_len, 'learning_rate':d.learning_rate, 'n_iter':d.n_iter, 'n_jobs':d.n_jobs, 'n_kernels':d.n_kernels, 'n_nonzero_coefs':d.n_nonzero_coefs}
     pickle.dump(o,f)
 
