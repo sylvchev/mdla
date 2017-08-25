@@ -19,7 +19,6 @@ from sklearn.utils import check_random_state, gen_even_slices
 # Pour array3d
 import scipy.sparse as sp
 from sklearn.utils import assert_all_finite
-from sklearn.utils.fixes import safe_copy
 
 # TODO:
 # - speed up by grouping decomposition+update as in pydico.
@@ -827,7 +826,7 @@ def multivariate_dict_learning(X, n_kernels, n_nonzero_coefs=1,
             # assert(dE >= -tol * errors[-1])
             if ii == 1 and verbose == 1:
                 print ('Expecting this learning experiment to finish in %.2f m'
-                       % (time()-t0)*max_iter/60.)
+                       % ((time()-t0)*max_iter/60.))
             if dE < tol * errors[-1]:
                 if verbose >= 1:
                     # A line return
@@ -1506,12 +1505,10 @@ def array3d(X, dtype=None, order=None, copy=False, force_all_finite=True):
     if sp.issparse(X):
         raise TypeError('A sparse matrix was passed, but dense data '
                         'is required. Use X.toarray() to convert to dense.')
-    X_3d = np.asarray(np.atleast_3d(X), dtype=dtype, order=order)
+    X_3d = np.array(np.atleast_3d(X), dtype=dtype, order=order, copy=copy)
     if type(X) is np.ndarray and X.ndim == 2:
         X_3d = X_3d.swapaxes(0,2)
         X_3d = X_3d.swapaxes(1,2)
     if force_all_finite:
         assert_all_finite(X_3d)
-    if X is X_3d and copy:
-        X_3d = safe_copy(X_3d)
     return X_3d
