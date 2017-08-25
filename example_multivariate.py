@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mdla import MultivariateDictLearning, MiniBatchMultivariateDictLearning
 from mdla import multivariate_sparse_encode
-from dict_metrics import hausdorff, emd, detectionRate
+from dict_metrics import hausdorff, emd, detection_rate
 from numpy.linalg import norm
 from numpy import array, arange, zeros, min, max
 from numpy.random import rand, randn, permutation, randint, RandomState
