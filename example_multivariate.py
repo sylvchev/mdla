@@ -36,12 +36,12 @@ def plot_multivariate(objective_error, detection_rate, wasserstein,
     
     # plotting data from our metric
     met = fig.add_subplot(1,3,3)
-    _ = met.plot(step*arange(1, len(wasserstein)+1), 100-wasserstein,
+    _ = met.plot(step*arange(1, len(wasserstein)+1), 1-wasserstein,
                     label=r'$d_W$', color='red') 
-    met.axis([0, len(wasserstein), 0, 100])
+    met.axis([0, len(wasserstein), 0, 1])
     met.set_xticks(arange(0, step*len(wasserstein)+1, step))
     met.set_xlabel('Iteration')
-    met.set_ylabel(r'Recovery rate (in %)')
+    met.set_ylabel(r'Recovery distance')
     met.legend(loc='upper left')
     
     plt.tight_layout(.5)
@@ -156,7 +156,7 @@ learned_dict2.objective_error = list()
 learned_dict2 = learned_dict2.fit(X)
 
 plot_multivariate(array(learned_dict2.objective_error),
-                array(learned_dict2.detect_rate),
-                100.-array(learned_dict2.wasserstein),
-                n_iter=1, figname='multivariate-case-callback')
+                  array(learned_dict2.detect_rate),
+                  array(learned_dict2.wasserstein),
+                  n_iter=1, figname='multivariate-case-callback')
     
