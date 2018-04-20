@@ -86,8 +86,11 @@ for i in range(len(residual)):
 
 - Chevallier, S., Barthelemy, Q., & Atif, J. (2014). [*Subspace metrics for multivariate dictionaries and application to EEG*][1]. In Acoustics, Speech and Signal Processing (ICASSP), IEEE International Conference on (pp. 7178-7182).
 - Smith, E., & Lewicki, M. S. (2005). [*Efficient coding of time-relative structure using spikes*][2]. Neural Computation, 17(1), 19-45
+- Chevallier, S., Barthélemy, Q., & Atif, J. (2014). [*On the need for metrics in dictionary learning assessment*][3]. In European Signal Processing Conference (EUSIPCO), pp. 1427-1431. 
 
 [1]: http://dx.doi.org/10.1109/ICASSP.2014.6854993 "Chevallier et al., 2014"
 
 [2]: http://dl.acm.org/citation.cfm?id=1119614 "Smith and Lewicki, 2005"
+
+[3]: https://hal-uvsq.archives-ouvertes.fr/hal-01352054/document
 
