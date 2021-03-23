@@ -40,7 +40,7 @@ jobs:
 
   coverage:
     needs: test-and-lint
-	 runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: coverall
         shell: bash
