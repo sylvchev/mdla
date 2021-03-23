@@ -30,11 +30,11 @@ jobs:
         run: |
           nosetests
           coverage xml
-      #     nosetests --with-coverage --cover-erase --logging-level=INFO
-      #   - name: Run linting
-      #     shell: bash
-      #     run: |
-      #       flake8
           coveralls --config_file .coveragerc
           codecov
           python-codacy-coverage -r coverage.xml
+
+#   - name: Run linting
+#     shell: bash
+#     run: |
+#       flake8
