@@ -1,5 +1,4 @@
 """ Multivariate dictionary learning"""
-from __future__ import print_function
 # Author: Sylvain Chevallier
 # License: GPL v3
 
@@ -9,11 +8,10 @@ import itertools
 import numpy as np
 from numpy import floor
 from time import time
-from matplotlib.mlab import find
 
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.externals.joblib import Parallel, delayed, cpu_count
-from sklearn.externals.six.moves import zip
+from joblib import Parallel, delayed, cpu_count
+# from sklearn.externals.six.moves import zip
 from sklearn.utils import check_random_state, gen_even_slices
 
 # Pour array3d
@@ -23,6 +21,11 @@ from sklearn.utils import assert_all_finite
 # TODO:
 # - speed up by grouping decomposition+update as in pydico.
 # - adding extension for shift invariant dico
+
+
+def find(condition):
+    res, = np.nonzero(np.ravel(condition))
+    return res
 
 
 def _shift_and_extend(signal, extended_length, shift_offset):
