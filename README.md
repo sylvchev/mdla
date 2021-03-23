@@ -1,8 +1,7 @@
 # MDLA - Multivariate Dictionary Learning Algorithm
 
-[![Coverage Status](https://coveralls.io/repos/sylvchev/mdla/badge.svg?branch=master&service=github)](https://coveralls.io/github/sylvchev/mdla?branch=master)
-[![Travis CI](https://travis-ci.org/sylvchev/mdla.svg?branch=master)](https://travis-ci.org/sylvchev/mdla)
-[![Code Climate](https://codeclimate.com/github/sylvchev/mdla/badges/gpa.svg)](https://codeclimate.com/github/sylvchev/mdla)
+[![Build Status](https://github.com/sylvchev/mdla/workflows/Test-and-Lint/badge.svg)](https://github.com/sylvchev/mdla/actions?query=branch%3Amaster)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Dictionary Learning for the multivariate dataset
 
