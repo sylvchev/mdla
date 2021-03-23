@@ -29,9 +29,10 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-#         nosetests --with-coverage --cover-erase --logging-level=INFO
           nosetests
           coverage xml
+
+#         nosetests --with-coverage --cover-erase --logging-level=INFO
 #       - name: Run linting
 #         shell: bash
 #         run: |
