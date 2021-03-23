@@ -13,6 +13,8 @@ jobs:
     strategy:
       matrix:
         python_version: [3.6, 3.7, 3.8]
+      env:
+        PYTHON: ${{ matrix.python_version }}
 
     steps:
       - uses: actions/checkout@v2
@@ -29,7 +31,16 @@ jobs:
         shell: bash
         run: |
           nosetests
-
+      - name: Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          env_vars: PYTHON
+          name: codecov-umbrella
+        fail_ci_if_error: true
+        path_to_write_report: ./coverage/codecov_report.txt
+        verbose: true
 #   - name: Run linting
 #     shell: bash
 #     run: |
