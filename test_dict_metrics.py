@@ -1,13 +1,8 @@
-from __future__ import print_function
 import numpy as np
 
-from sklearn.utils.testing import assert_almost_equal
-from sklearn.utils.testing import assert_array_almost_equal
-# from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_equal, assert_not_equal
-from sklearn.utils.testing import assert_true
-# from sklearn.utils.testing import assert_less
-from sklearn.utils.testing import assert_raises
+from numpy.testing import assert_almost_equal, assert_array_almost_equal, assert_equal, assert_raises
+from nose.tools import assert_not_equal
+
 from numpy.linalg import norm
 from numpy.random import randn
 from numpy import arange, NaN, concatenate, zeros, ones, allclose
@@ -21,7 +16,7 @@ for i in range(len(dm)):
 du = [randn(n_features, 1) for i in range(n_kernels)]
 for i in range(len(du)):
     du[i] /= norm(du[i])
-    
+
 gdm = ["chordal", "chordal_principal_angles", "fubinistudy", "binetcauchy",
        "geodesic", "frobenius"]
 gdu = ["abs_euclidean", "euclidean"]
@@ -83,7 +78,7 @@ def test_kernel_registration():
 
 def test_unknown_metric():
     for m in [hausdorff, emd]:
-        assert_true((m(dm, dm, 'inexistant_metric') is NaN))
+        assert ((m(dm, dm, 'inexistant_metric') is NaN))
                 
 def test_inhomogeneous_dims():
     idx = arange(n_dims)
@@ -118,9 +113,9 @@ def test_correlation():
     assert_not_equal(100., detection_rate(dm, dm2, 0.99))
     assert_equal((100., 100.), precision_recall(du, du, 0.97))
     assert_equal((0., 0.), precision_recall(du, du2, 0.99))
-    assert_true(allclose(precision_recall_points(du, du),
+    assert (allclose(precision_recall_points(du, du),
                             (ones(len(du)), ones(len(du)))))
-    assert_true(not allclose(precision_recall_points(du, du2),
+    assert (not allclose(precision_recall_points(du, du2),
                                 (ones(len(du)), ones(len(du2)))))
         
 def test_beta_dist():
