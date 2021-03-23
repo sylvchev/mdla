@@ -29,10 +29,6 @@ jobs:
         shell: bash
         run: |
           nosetests
-          coverage xml
-          coveralls --config_file .coveragerc
-          codecov
-          python-codacy-coverage -r coverage.xml
 
 #   - name: Run linting
 #     shell: bash
