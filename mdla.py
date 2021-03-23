@@ -901,7 +901,10 @@ def multivariate_dict_learning(
             callback(locals())
     # reformating the error
     # print ("errors=", len(errors), ", reshape into", (max_iter,))
-    errors = np.array(errors).reshape((max_iter,))
+    if len(errors) < max_iter:
+        errors = np.array(errors).reshape((len(errors),))
+    else:
+        errors = np.array(errors).reshape((max_iter,))
     return code, dictionary, errors
 
 
@@ -1381,6 +1384,7 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
             print("Warning: X has more features than dictionary kernels")
             # raise ValueError('X has more features than dictionary kernels')
 
+        print("merdum")
         code, dictionary, err = multivariate_dict_learning(
             X,
             self.n_kernels,
