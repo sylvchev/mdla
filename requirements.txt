@@ -1,0 +1,9 @@
+nose
+numpy
+scipy
+scikit-learn
+matplotlib
+cvxopt
+python-coveralls
+codacy-coverage
+
