@@ -1,7 +1,36 @@
 [tool.black]
 line-length = 90
+target-version = ["py36"]
 
 [tool.isort]
+src_paths = ["mdla"]
 profile = "black"
 line_length = 90
 lines_after_imports = 2
+
+[tool.poetry]
+name = "mdla"
+version = "1.0.0"
+description = "Multivariate Dictionary Learning Algorithm"
+authors = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
+readme = "README.md"
+repository = "https://github.com/sylvchev/mdla"
+documentation = "http://github.com/sylvchev/mdla"
+keywords = ["sparse decomposition", "dictionary learning", "multivariate signal", "eeg"]
+license = "BSD-3-Clause"
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+numpy = "^1.19.0"
+scipy = "^1.5"
+scikit-learn = "^0.23"
+matplotlib = "^3.0.0"
+cvxopt = "^1.2.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.11.1"
+pytest = "^5.4.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
