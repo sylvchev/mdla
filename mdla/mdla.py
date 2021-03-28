@@ -212,7 +212,9 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None, verbose=False):
         Ainv[atoms_in_estimate : atoms_in_estimate + 1, 0:atoms_in_estimate] = -beta * b.T
         Ainv[0:atoms_in_estimate, atoms_in_estimate : atoms_in_estimate + 1] = -beta * b
         Ainv[atoms_in_estimate, atoms_in_estimate] = beta
-        decomposition[atoms_in_estimate] = np.array([alpha, k_off, k_selected])
+        decomposition[atoms_in_estimate] = np.array(
+            [alpha, k_off, k_selected], dtype=np.float64
+        )
         atoms_in_estimate += 1
         selected_list = np.vstack((selected_list, selected_atom.flatten()))
 
@@ -828,7 +830,7 @@ def multivariate_dict_learning(
 
         if verbose >= 2:
             print("[MDL] Initializing dictionary from samples")
-        offset = random_state.random_integers(0, max_offset, n_kernels)
+        offset = random_state.randint(0, max_offset + 1, n_kernels)
         ind_kernels = random_state.permutation(n_samples)[:n_kernels]
         dictionary = [X[p[0], p[1] : p[1] + k_len, :] for p in zip(ind_kernels, offset)]
         dictionary = _normalize(dictionary)
@@ -1029,7 +1031,7 @@ def multivariate_dict_learning_online(
 
         if verbose >= 2:
             print("[MDL] Initializing dictionary from samples")
-        offset = random_state.random_integers(0, max_offset, n_kernels)
+        offset = random_state.randint(0, max_offset + 1, n_kernels)
         ind_kernels = random_state.permutation(n_samples)[:n_kernels]
         dictionary = [X[p[0], p[1] : p[1] + k_len, :] for p in zip(ind_kernels, offset)]
         dictionary = _normalize(dictionary)

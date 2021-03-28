@@ -1,6 +1,0 @@
-nose
-numpy
-scipy
-scikit-learn
-matplotlib
-cvxopt

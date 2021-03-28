@@ -1,10 +1,9 @@
-from nose.tools import assert_not_equal
 from numpy import NaN, allclose, arange, concatenate, ones, zeros
 from numpy.linalg import norm
 from numpy.random import randn
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-from dict_metrics import (
+from mdla.dict_metrics import (
     beta_dist,
     detection_rate,
     emd,
@@ -57,8 +56,8 @@ def test_kernel_registration():
         dm2[i] /= norm(dm2[i], "fro")
 
     for m in [hausdorff, emd]:
-        assert_not_equal(0.0, m(dm, dm2, "chordal"))
-        assert_not_equal(0.0, m(dm2, dm, "chordal"))
+        assert 0.0 != m(dm, dm2, "chordal")
+        assert 0.0 != m(dm2, dm, "chordal")
 
     dm3 = []
     for i in range(len(dm)):
@@ -88,8 +87,8 @@ def test_kernel_registration():
     for i in range(len(du)):
         du3.append(concatenate((zeros((4, 1)), du[i]), axis=0))
     for g, m in zip(gdu, [hausdorff, emd]):
-        assert_not_equal(0.0, m(du, du2, g))
-        assert_not_equal(0.0, m(du2, du, g))
+        assert 0.0 != m(du, du2, g)
+        assert 0.0 != m(du2, du, g)
         assert_almost_equal(0.0, m(du, du3, g))
         assert_almost_equal(0.0, m(du3, du, g))
 
@@ -132,9 +131,9 @@ def test_correlation():
         dm2[i] /= norm(dm2[i])
 
     assert_equal(100.0, detection_rate(du, du, 0.97))
-    assert_not_equal(100.0, detection_rate(du, du2, 0.99))
+    assert 100.0 != detection_rate(du, du2, 0.99)
     assert_equal(100.0, detection_rate(dm, dm, 0.97))
-    assert_not_equal(100.0, detection_rate(dm, dm2, 0.99))
+    assert 100.0 != detection_rate(dm, dm2, 0.99)
     assert_equal((100.0, 100.0), precision_recall(du, du, 0.97))
     assert_equal((0.0, 0.0), precision_recall(du, du2, 0.99))
     assert allclose(precision_recall_points(du, du), (ones(len(du)), ones(len(du))))
@@ -147,7 +146,7 @@ def test_beta_dist():
         du2[i] /= norm(du2[i])
 
     assert_equal(0.0, beta_dist(du, du))
-    assert_not_equal(0.0, beta_dist(du, du2))
+    assert 0.0 != beta_dist(du, du2)
 
     du2 = [randn(n_features + 2, 1) for i in range(n_kernels)]
     for i in range(len(du2)):
@@ -160,4 +159,4 @@ def test_beta_dict_length():
     for i in range(len(du2)):
         du2[i] /= norm(du2[i])
 
-    assert_not_equal(0.0, beta_dist(du, du2))
+    assert 0.0 != beta_dist(du, du2)

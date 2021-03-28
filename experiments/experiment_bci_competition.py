@@ -5,11 +5,11 @@ from os.path import exists
 
 from numpy import array, exp, int, nan_to_num, pi, poly, real, zeros_like
 from numpy.random import RandomState
+from plot_bci_dict import plot_atom_usage, plot_objective_func
 from scipy.io import loadmat
 from scipy.signal import butter, decimate, filtfilt
 
 from mdla import MiniBatchMultivariateDictLearning
-from plot_bci_dict import plot_atom_usage, plot_objective_func
 
 
 def notch(Wn, notchWidth):
