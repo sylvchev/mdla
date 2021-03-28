@@ -1,15 +1,10 @@
 [run]
+branch = True
 source =
     mdla
 	 dict_metrics
 omit =
-    */python?.?/*
-    */lib-python/?.?/*.py
-    */lib_pypy/_*.py
-    */site-packages/ordereddict.py
-    */site-packages/nose/*
-    */unittest2/*
-
+    */tests/*.py
 disable_warnings =
     module-not-imported
     no-data-collected
