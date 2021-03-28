@@ -1386,7 +1386,6 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
             print("Warning: X has more features than dictionary kernels")
             # raise ValueError('X has more features than dictionary kernels')
 
-        print("merdum")
         code, dictionary, err = multivariate_dict_learning(
             X,
             self.n_kernels,
