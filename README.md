@@ -2,6 +2,7 @@
 
 [![Build Status](https://github.com/sylvchev/mdla/workflows/Test-and-Lint/badge.svg)](https://github.com/sylvchev/mdla/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/gh/sylvchev/mdla/branch/master/graph/badge.svg?token=Vba6g9c5pM)](https://codecov.io/gh/sylvchev/mdla)
 
 ## Dictionary Learning for the multivariate dataset
 
