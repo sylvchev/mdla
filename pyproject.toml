@@ -18,6 +18,11 @@ repository = "https://github.com/sylvchev/mdla"
 documentation = "http://github.com/sylvchev/mdla"
 keywords = ["sparse decomposition", "dictionary learning", "multivariate signal", "eeg"]
 license = "BSD-3-Clause"
+classifiers = [
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
