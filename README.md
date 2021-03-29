@@ -48,11 +48,11 @@ The proposed implementation is an adaptation of the work of the following author
   _Multivariate temporal dictionary learning for EEG_. Journal of Neuroscience Methods,
   215:19–28, 2013.
 
-## Dependencies
+## How to install
 
-The only dependencies are scikit-learn, matplotlib, numpy and scipy.
+Use `pip install mdla`
 
-No installation is required.
+The only dependencies are scikit-learn, matplotlib, numpy, scipy and cvxopt.
 
 ## Example
 
