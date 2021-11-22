@@ -384,7 +384,7 @@ def multivariate_sparse_encode(
         kernels = dictionary
 
     if n_nonzero_coefs is None:
-        n_nonzero_coefs = max(n_features / 10, 1)
+        n_nonzero_coefs = max(int(np.round(n_features / 10)), 1)
 
     if n_jobs == -1:
         n_jobs = cpu_count()
