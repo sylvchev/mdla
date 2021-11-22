@@ -10,7 +10,7 @@ lines_after_imports = 2
 
 [tool.poetry]
 name = "mdla"
-version = "1.0.1"
+version = "1.0.2"
 description = "Multivariate Dictionary Learning Algorithm"
 authors = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
 readme = "README.md"
