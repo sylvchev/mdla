@@ -25,11 +25,11 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.7"
 numpy = "^1.19.0"
 scipy = "^1.5"
-scikit-learn = "^0.24"
-matplotlib = "^3.0.0"
+scikit-learn = "^1.0"
+matplotlib = "^3.0"
 cvxopt = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
