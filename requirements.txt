@@ -24,9 +24,9 @@ cvxopt==1.2.7; (python_version >= "2.7" and python_full_version < "3.0.0") or (p
 cycler==0.11.0; python_version >= "3.7" \
     --hash=sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3 \
     --hash=sha256:9c87405839a19696e837b3b818fed3f5f69f16f1eec1a1ad77e043dcea9c772f
-fonttools==4.28.1; python_version >= "3.7" \
-    --hash=sha256:68071406009e7ef6a5fdcd85d95975cd6963867bb226f2b786bfffe15d1959ef \
-    --hash=sha256:8c8f84131bf04f3b1dcf99b9763cec35c347164ab6ad006e18d2f99fcab05529
+fonttools==4.39.0; python_version >= "3.7" \
+    --hash=sha256:909c104558835eac27faeb56be5a4c32694192dca123d073bf746ce9254054af \
+    --hash=sha256:f5e764e1fd6ad54dfc201ff32af0ba111bcfbe0d05b24540af74c63db4ed6390
 joblib==1.1.0; python_version >= "3.7" \
     --hash=sha256:f21f109b3c7ff9d95f8387f752d0d9c34a02aa2f7060c2135f465da0e5160ff6 \
     --hash=sha256:4158fcecd13733f8be669be0683b96ebdbbd38d23559f54dca7205aea1bf1e35
