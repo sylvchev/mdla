@@ -107,7 +107,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None, verbose=False):
     if verbose >= 4:
         print("[M-OMP # 0 ] signal is")
         print(residual)
-    Ainv = np.zeros((n_kernels, n_kernels), np.float)
+    Ainv = np.zeros((n_kernels, n_kernels), float)
     Ainv[0, 0] = 1.0
 
     # First iteration
@@ -213,7 +213,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None, verbose=False):
         Ainv[0:atoms_in_estimate, atoms_in_estimate : atoms_in_estimate + 1] = -beta * b
         Ainv[atoms_in_estimate, atoms_in_estimate] = beta
         decomposition[atoms_in_estimate] = np.array(
-            [alpha, k_off, k_selected], dtype=np.float64
+            alpha.flatten().tolist() + [k_off, k_selected], dtype=np.float64
         )
         atoms_in_estimate += 1
         selected_list = np.vstack((selected_list, selected_atom.flatten()))
