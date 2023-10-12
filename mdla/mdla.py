@@ -51,7 +51,7 @@ def _get_learning_rate(iteration, max_iteration, learning_rate):
         return 0.0
     last_iterations = np.floor(max_iteration * 2.0 / 3.0)
     if iteration >= last_iterations:
-        return last_iterations ** learning_rate
+        return last_iterations**learning_rate
     else:
         return (iteration + 1) ** learning_rate
 
@@ -145,8 +145,8 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None, verbose=False):
         print("[M-OMP # 0 ] residual is now")
         print(residual)
 
-    signal_energy = (signal ** 2).sum(1).mean()
-    residual_energy = (residual ** 2).sum(1).mean()
+    signal_energy = (signal**2).sum(1).mean()
+    residual_energy = (residual**2).sum(1).mean()
 
     if verbose >= 3:
         print(
@@ -230,7 +230,7 @@ def _multivariate_OMP(signal, dictionary, n_nonzero_coefs=None, verbose=False):
         residual = signal - estimated_signal
 
         if verbose >= 3:
-            residual_energy = (residual ** 2).sum(1).mean()
+            residual_energy = (residual**2).sum(1).mean()
             print(
                 "[M-OMP #",
                 atoms_in_estimate - 1,
@@ -1335,7 +1335,6 @@ class MultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
         random_state=None,
         callback=None,
     ):
-
         self._set_mdla_params(
             n_kernels, n_nonzero_coefs, kernel_init_len, n_jobs, learning_rate
         )
@@ -1504,7 +1503,6 @@ class MiniBatchMultivariateDictLearning(BaseEstimator, MultivariateDictMixin):
         learning_rate=None,
         callback=None,
     ):
-
         self._set_mdla_params(
             n_kernels, n_nonzero_coefs, kernel_init_len, n_jobs, learning_rate
         )
