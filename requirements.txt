@@ -140,9 +140,9 @@ numpy==1.21.1; python_version >= "3.7" \
     --hash=sha256:01721eefe70544d548425a07c80be8377096a54118070b8a62476866d5208e33 \
     --hash=sha256:2d4d1de6e6fb3d28781c73fbde702ac97f03d79e4ffd6598b880b2d95d62ead4 \
     --hash=sha256:dff4af63638afcc57a3dfb9e4b26d434a7a602d225b42d746ea7fe2edf1342fd
-packaging==21.3; python_version >= "3.7" \
-    --hash=sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522 \
-    --hash=sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb
+packaging==23.2; python_version >= "3.7" \
+    --hash=sha256:048fb0e9405036518eaaf48a55953c750c11e1a1b68e0dd1a9d62ed0c092cfc5 \
+    --hash=sha256:8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7
 pillow==10.0.1; python_version >= "3.7" \
     --hash=sha256:0462b1496505a3462d0f35dc1c4d7b54069747d65d00ef48e736acda2c8cbdff \
     --hash=sha256:186f7e04248103482ea6354af6d5bcedb62941ee08f7f788a1c7707bc720c66f \
