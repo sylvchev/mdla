@@ -21,9 +21,9 @@ cvxopt==1.2.7; (python_version >= "2.7" and python_full_version < "3.0.0") or (p
     --hash=sha256:97262506af8c5fffadcabb4b0ed9caa67ab94c46e08e16b563736a274f7b8601 \
     --hash=sha256:b6604befe48283f6d71a31d10a6a286e13c11644dd34e108d873293aa5ccec8d \
     --hash=sha256:3f9db1f4d4e820aaea81d6fc21054c89dc6327c84f935dd5a1eda1af11e1d504
-cycler==0.11.0; python_version >= "3.7" \
-    --hash=sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3 \
-    --hash=sha256:9c87405839a19696e837b3b818fed3f5f69f16f1eec1a1ad77e043dcea9c772f
+cycler==0.12.1; python_version >= "3.7" \
+    --hash=sha256:85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30 \
+    --hash=sha256:88bb128f02ba341da8ef447245a9e138fae777f6a23943da4540077d3601eb1c
 fonttools==4.28.1; python_version >= "3.7" \
     --hash=sha256:68071406009e7ef6a5fdcd85d95975cd6963867bb226f2b786bfffe15d1959ef \
     --hash=sha256:8c8f84131bf04f3b1dcf99b9763cec35c347164ab6ad006e18d2f99fcab05529
